@@ -1,0 +1,8 @@
+{
+  "id": "banlao-first-pack",
+  "name": "丹阳庐江包",
+  "version": "1.0.0",
+  "author": "banlao",
+  "game": 1,
+  "description": "在原版地图上加丹阳、庐江两座郡城和三条路，验证数据包流程。"
+}

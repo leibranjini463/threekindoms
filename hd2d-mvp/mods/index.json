@@ -1,5 +1,11 @@
 [
   {
+    "id": "banlao-first-pack",
+    "name": "丹阳庐江包",
+    "version": "1.0.0",
+    "author": "banlao"
+  },
+  {
     "id": "sample-cities",
     "name": "加城样例",
     "version": "1.0.0",

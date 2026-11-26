@@ -1,0 +1,8 @@
+{
+  "add": [
+    { "name": "丹阳", "seat": "宛陵（宣城）", "lon": 118.76, "lat": 30.94, "tier": "county", "like": "建业", "calamity": "flood",
+      "gold": 190, "rice": 280, "pop": 170, "land": 28, "industry": 28, "disaster": 28, "gov": 38 },
+    { "name": "庐江", "seat": "舒县（庐江）", "lon": 117.02, "lat": 31.02, "tier": "county", "like": "江夏", "calamity": "flood",
+      "gold": 170, "rice": 250, "pop": 150, "land": 24, "industry": 26, "disaster": 30, "gov": 36 }
+  ]
+}
