@@ -1,0 +1,384 @@
+{
+ "weapon": "spear",
+ "frames": [
+  "idle_a",
+  "idle_b",
+  "gallop_1",
+  "gallop_2",
+  "gallop_3",
+  "gallop_4",
+  "windup",
+  "strike",
+  "follow",
+  "hurt",
+  "taunt",
+  "fall",
+  "dodge",
+  "downed",
+  "loose_1",
+  "loose_2",
+  "walk_1",
+  "walk_2",
+  "walk_3",
+  "walk_4",
+  "swing_mid",
+  "swing_late",
+  "recover",
+  "feint_ready",
+  "feint_jab",
+  "feint_back",
+  "allin_windup",
+  "allin_strike",
+  "off_balance",
+  "hit_light",
+  "recoil_step"
+ ],
+ "cell": [
+  181,
+  119
+ ],
+ "anchor": 84,
+ "figH": 112,
+ "tips": {
+  "idle_a": [
+   64,
+   51
+  ],
+  "idle_b": [
+   62,
+   52
+  ],
+  "gallop_1": [
+   74,
+   52
+  ],
+  "gallop_2": [
+   79,
+   51
+  ],
+  "gallop_3": [
+   76,
+   47
+  ],
+  "gallop_4": [
+   79,
+   51
+  ],
+  "windup": [
+   74,
+   50
+  ],
+  "strike": [
+   91,
+   90
+  ],
+  "follow": [
+   76,
+   53
+  ],
+  "hurt": [
+   72,
+   41
+  ],
+  "taunt": [
+   62,
+   55
+  ],
+  "fall": [
+   94,
+   80
+  ],
+  "dodge": [
+   72,
+   34
+  ],
+  "downed": [
+   78,
+   28
+  ],
+  "loose_1": [
+   75,
+   64
+  ],
+  "loose_2": [
+   76,
+   67
+  ],
+  "walk_1": [
+   68,
+   53
+  ],
+  "walk_2": [
+   72,
+   53
+  ],
+  "walk_3": [
+   72,
+   51
+  ],
+  "walk_4": [
+   75,
+   48
+  ],
+  "swing_mid": [
+   90,
+   72
+  ],
+  "swing_late": [
+   84,
+   81
+  ],
+  "recover": [
+   77,
+   53
+  ],
+  "feint_ready": [
+   74,
+   52
+  ],
+  "feint_jab": [
+   78,
+   78
+  ],
+  "feint_back": [
+   68,
+   50
+  ],
+  "allin_windup": [
+   78,
+   45
+  ],
+  "allin_strike": [
+   87,
+   89
+  ],
+  "off_balance": [
+   76,
+   59
+  ],
+  "hit_light": [
+   64,
+   54
+  ],
+  "recoil_step": [
+   75,
+   46
+  ]
+ },
+ "rest": 15,
+ "clips": {
+  "stagger": [
+   [
+    "hurt",
+    260
+   ],
+   [
+    "dodge",
+    200
+   ]
+  ],
+  "dodge": [
+   [
+    "dodge",
+    260
+   ]
+  ],
+  "taunt": [
+   [
+    "taunt",
+    700
+   ]
+  ],
+  "idle": [
+   [
+    "idle_a",
+    900
+   ],
+   [
+    "idle_b",
+    520
+   ]
+  ],
+  "gallop": [
+   [
+    "gallop_1",
+    90
+   ],
+   [
+    "gallop_2",
+    90
+   ],
+   [
+    "gallop_3",
+    90
+   ],
+   [
+    "gallop_4",
+    90
+   ]
+  ],
+  "loose": [
+   [
+    "loose_1",
+    110
+   ],
+   [
+    "loose_2",
+    110
+   ]
+  ],
+  "attack": [
+   [
+    "windup",
+    140
+   ],
+   [
+    "swing_mid",
+    26,
+    "go"
+   ],
+   [
+    "swing_late",
+    26,
+    "go"
+   ],
+   [
+    "strike",
+    26,
+    "hit"
+   ],
+   [
+    "strike",
+    110
+   ],
+   [
+    "follow",
+    110
+   ],
+   [
+    "recover",
+    120
+   ]
+  ],
+  "feint": [
+   [
+    "feint_ready",
+    90
+   ],
+   [
+    "feint_jab",
+    60,
+    "hit"
+   ],
+   [
+    "feint_jab",
+    50
+   ],
+   [
+    "feint_back",
+    130
+   ]
+  ],
+  "desperate": [
+   [
+    "allin_windup",
+    360
+   ],
+   [
+    "swing_mid",
+    50,
+    "go"
+   ],
+   [
+    "allin_strike",
+    50,
+    "hit"
+   ],
+   [
+    "allin_strike",
+    180
+   ],
+   [
+    "follow",
+    150
+   ],
+   [
+    "recover",
+    220
+   ]
+  ],
+  "desperate_miss": [
+   [
+    "allin_windup",
+    360
+   ],
+   [
+    "swing_mid",
+    50,
+    "go"
+   ],
+   [
+    "allin_strike",
+    50,
+    "hit"
+   ],
+   [
+    "off_balance",
+    380
+   ],
+   [
+    "recover",
+    260
+   ]
+  ],
+  "hurt_light": [
+   [
+    "hit_light",
+    140
+   ],
+   [
+    "recoil_step",
+    140
+   ]
+  ],
+  "hurt": [
+   [
+    "hurt",
+    150
+   ],
+   [
+    "recoil_step",
+    160
+   ]
+  ],
+  "hurt_heavy": [
+   [
+    "hurt",
+    260
+   ],
+   [
+    "recoil_step",
+    200
+   ]
+  ],
+  "walk": [
+   [
+    "walk_1",
+    160
+   ],
+   [
+    "walk_2",
+    160
+   ],
+   [
+    "walk_3",
+    160
+   ],
+   [
+    "walk_4",
+    160
+   ]
+  ]
+ },
+ "body": 111
+}

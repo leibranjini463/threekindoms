@@ -1,0 +1,8 @@
+{
+  "add": [
+    { "name": "会稽", "seat": "山阴（绍兴）", "lon": 120.48, "lat": 29.85, "tier": "county", "like": "建安", "calamity": "flood",
+      "gold": 180, "rice": 260, "pop": 160, "land": 25, "industry": 30, "disaster": 30, "gov": 40 },
+    { "name": "豫章", "seat": "南昌", "lon": 115.44, "lat": 28.98, "tier": "county", "like": "长沙", "calamity": "flood",
+      "gold": 200, "rice": 300, "pop": 180, "land": 30, "industry": 25, "disaster": 25, "gov": 35 }
+  ]
+}

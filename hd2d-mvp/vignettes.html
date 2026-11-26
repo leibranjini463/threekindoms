@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>命令演出预览</title>
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
+<link rel="stylesheet" href="src/ui.css">
+<style>
+  /* Dev preview of every 命令演出 scene, live, at the in-game size. Not linked from the game. */
+  html, body { overflow: auto; }
+  body { padding: 24px; }
+  h1 { font: 32px var(--brush); letter-spacing: 4px; margin: 0 0 4px; color: #fff3d6; }
+  .note { color: var(--dim); margin: 0 0 18px; font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, 344px); gap: 18px; }
+  .cell { position: relative; }
+  .cell h2 { margin: 0 0 6px; font: 600 14px var(--serif); color: var(--gold); letter-spacing: 2px; }
+  .cell .vig { position: relative; clip-path: none; }
+  .bar { margin-bottom: 14px; display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+<h1>命令演出</h1>
+<p class="note">每个场景都在游戏内的尺寸（320×213，1:1）下实时循环播放，包括代码叠加的动效。「播放流程」会在下方按游戏里的完整流程（展开、打字、收起）依次播放。</p>
+<div class="bar"><button class="btn" id="flow">播放流程</button></div>
+<div class="grid" id="grid"></div>
+<div class="panel" id="stage" style="position:relative;width:340px;height:300px;margin-top:24px"></div>
+<script type="module">
+import { sceneFrame, playVignette, recordText } from './src/vignette.js';
+const SCENES = [['land', '开发·土地', '土地 +14'], ['industry', '开发·产业', '产业 +13'], ['pop', '开发·人口', '人口 +700'], ['disaster', '防灾', '防灾 +5'],
+  ['record', '记录', '已记录'], ['conscript', '征兵', '征兵 500'], ['march', '移动', '移动到冀州'], ['move', '运输', '运往冀州：金100 米200'], ['search', '搜索', '发现了金 42'], ['scout', '侦察', '侦察冀州'],
+  ['reward', '赏赐', '张飞 忠诚 +8'], ['alms', '施舍', '民忠 +5'], ['rice-buy', '买米', '买米 120'], ['rice-sell', '卖米', '卖米 120'], ['treasure', '卖宝', '卖宝 金 300'], ['hospital', '病院', '关羽 体力 +40'], ['school', '学问所', '张飞 知力 +3（花费50金）'],
+  ['weapons', '武器屋', '关羽 装备了偃月刀'], ['ally', '同盟', '与袁绍结成同盟（12个月）'], ['poach', '诱纳', '张辽 投入麾下'], ['discord', '离间', '吕布 忠诚 -8']];
+await document.fonts.load('19px "Ma Shan Zheng"');
+const text = recordText(189, 0, '刘备'), cells = [];
+for (const [id, label] of SCENES) {
+  const cv = document.createElement('canvas');
+  const box = document.createElement('div'); box.className = 'cell';
+  box.innerHTML = `<h2>${label}</h2><div class="vig"><div class="vig-frame"></div></div>`;
+  box.querySelector('.vig-frame').append(cv); document.getElementById('grid').append(box); cells.push([id, cv]);
+}
+const t0 = performance.now();
+// Every scene replays every 4 s so it can be watched more than once.
+const tick = async () => { const t = (performance.now() - t0) / 1000 % 4; for (const [id, cv] of cells) await sceneFrame(id, t, cv, text); requestAnimationFrame(tick); };
+tick();
+document.getElementById('flow').onclick = async (e) => {
+  e.target.disabled = true; const stage = document.getElementById('stage');
+  for (const [id, , cap] of SCENES) { stage.scrollIntoView({ block: 'center' }); await playVignette({ scene: id, caption: cap, force: true, text: id === 'record' ? text : null }); await new Promise((r) => setTimeout(r, 300)); }
+  e.target.disabled = false;
+};
+</script>
+</body>
+</html>

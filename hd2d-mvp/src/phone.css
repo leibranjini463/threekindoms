@@ -1,0 +1,477 @@
+/* The phone layout (landscape, touch), applied under body.phone only: src/phone.js adds the class on a touch-only device with
+   a short side under 600 CSS px, or under ?phone. A desktop window never matches a rule here. The same DOM as the desktop
+   HUD (src/ui.css), rearranged: status along the top, the thing selected at the bottom left, its actions at the bottom right
+   (the thumbs), nothing in the middle. Tokens from phone.js: --g / --gr / --gt / --gb are the left, right, top and bottom
+   margins inside the safe area; --vh is the page's height as shown now. --hit is the smallest thing a finger is asked to hit. */
+body.phone { --hit: 44px; --vh: 100vh; --g: 10px; --gr: 10px; --gt: 6px; --gb: 8px; -webkit-text-size-adjust: 100%; overscroll-behavior: none;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+html:has(body.phone) { overscroll-behavior: none; }
+body.phone #stage canvas, body.phone .ctag, body.phone .flatwar, body.phone .flatstrategy { touch-action: none; }
+body.phone input, body.phone textarea { -webkit-user-select: text; user-select: text; }
+body.phone .panel { backdrop-filter: none; } /* a blur behind every panel costs a phone frames, and it would pin position: fixed children to the panel */
+body.phone .btn kbd, body.phone kbd.keycap, body.phone .cmd-preview, body.phone #tip, body.phone .padtip { display: none !important; }
+body.phone .btn { min-height: 36px; }
+
+/* Held upright: the game is laid out for landscape only. */
+.turn-phone { display: none; }
+@media (orientation: portrait) {
+  body.phone:not([data-screen="startup-error"])::after { content: '请把手机横过来游玩'; position: fixed; inset: 0; z-index: 999; display: grid; place-items: center; background: #0c0907f2; color: #fff3d6; font: 22px var(--brush); letter-spacing: 4px; }
+  :lang(zh-Hant) body.phone:not([data-screen="startup-error"])::after { content: '請把手機橫過來遊玩'; }
+}
+
+/* ---------- ☰ 系统 ---------- */
+body.phone .sysbtns, body.phone[data-screen="war"] .sysbtns, body.phone.flat2d[data-screen="war"] .sysbtns { --sys-top: var(--gt); top: var(--gt); left: auto; right: var(--gr); align-items: flex-end; max-width: calc(100vw - var(--g) - var(--gr)); }
+body.phone .sysbtns .sysmenu-btn { min-height: 32px; padding: 2px 10px; font-size: 14px; }
+body.phone .sysmenu-list { max-height: calc(var(--vh) - var(--gt) - 44px - var(--gb)); overflow-y: auto; overscroll-behavior: contain; flex-wrap: nowrap; }
+body.phone .sysmenu-list .btn { min-height: 34px; font-size: 13px; }
+
+/* ---------- Toast, message, banner, dialogs ---------- */
+body.phone .toast { top: calc(var(--gt) + 38px); max-width: calc(100vw - var(--g) - var(--gr) - 40px); font-size: 13px; padding: 4px 12px 4px 8px; }
+body.phone .msg { bottom: var(--gb); width: min(720px, calc(100vw - var(--g) - var(--gr))); grid-template-columns: 72px 1fr; gap: 10px; padding: 8px 12px; }
+body.phone .msg.noimg { grid-template-columns: 1fr; }
+body.phone .msg img { width: 72px; height: 96px; }
+body.phone .msg h4 { font-size: 19px; margin-bottom: 2px; } body.phone .msg p { font-size: 15px; line-height: 1.55; }
+body.phone .shade { padding: 4px max(4px, var(--gr)) 4px max(4px, var(--g)); }
+body.phone .modal { min-width: min(360px, 92vw); max-width: 100%; max-height: calc(var(--vh) - 12px); padding: 10px 14px; overscroll-behavior: contain; }
+body.phone .modal h3 { font-size: 21px; margin-bottom: 6px; }
+body.phone .modal .foot { margin-top: 8px; position: sticky; bottom: -10px; padding: 6px 0 2px; background: linear-gradient(#0000, var(--lacquer) 30%); }
+body.phone .modal .foot .btn, body.phone .modal .row .btn { min-height: var(--hit); padding-inline: 18px; }
+body.phone .modal input[type=range] { width: min(240px, 40vw); height: 32px; }
+body.phone .otable-wrap { max-height: calc(var(--vh) - 150px); }
+body.phone .mappick { top: calc(var(--gt) + 36px); max-width: calc(100vw - var(--g) - var(--gr)); padding: 6px 10px 8px; }
+body.phone .mappick h4 { font-size: 18px; } body.phone .mappick .chips .btn { min-height: 40px; }
+body.phone .aiturn { bottom: var(--gb); }
+body.phone .qnotice { right: var(--gr); bottom: var(--gb); max-width: 260px; }
+
+/* ---------- 战略地图 ---------- */
+body.phone .topbar { top: var(--gt); left: var(--g); transform: none; max-width: calc(100vw - var(--g) - var(--gr) - 76px); min-height: 32px; padding: 1px 10px; gap: 10px; font-size: 13px; flex-wrap: nowrap; overflow: hidden; }
+body.phone[data-screen="strategy"] .topbar { max-width: calc(100vw - var(--g) - var(--gr) - 76px); }
+body.phone .topbar .date { font-size: 17px; }
+body.phone .topbar .season { font-size: 12px; margin-left: 4px; padding: 0 4px; }
+body.phone .topbar .who > :not(.books) { display: none; } /* whose turn: the AI turn's plaque says it */
+body.phone .topbar .who.turn { display: none; } /* (its words are a span since D88: as bare text they stayed and pushed the figures out) */
+/* the figures never go under the bar's edge (会吹管的松鼠@bilibili, D88): short of room they break onto a second line, 金 and 米
+   under 城 将 兵, in the bar's own height */
+body.phone .topbar .res { gap: 0 8px; flex-wrap: wrap; line-height: 15px; }
+body.phone .topbar .res .resg { display: flex; gap: 8px; }
+/* (the narrowest, iPhone SE class, 568 px across) a little less air between the pieces, so six-figure totals fit too */
+@media (max-width: 600px) {
+  body.phone .topbar { gap: 6px; padding: 1px 7px; }
+  body.phone .topbar .res, body.phone .topbar .res .resg { column-gap: 6px; }
+  body.phone .topbar .tbtns .btn { padding: 0 6px; }
+}
+body.phone .topbar .tbtns { gap: 4px; column-gap: 4px; }
+body.phone .topbar .tbtns .btn { min-height: 28px; padding: 0 8px; font-size: 13px; }
+body.phone .rightcol { display: none; }
+
+body.phone .citypanel { top: auto; bottom: var(--gb); left: var(--g); width: 250px; max-height: calc(var(--vh) - var(--gt) - 40px - var(--gb)); overflow: hidden; }
+body.phone:not(.city-open) .citypanel > :is(.facs, .searchnote, .talentnote, .roster) { display: none; }
+body.phone .citypanel header { padding: 4px 10px 2px; gap: 8px; }
+body.phone .citypanel header h2 { font-size: 21px; letter-spacing: 1px; }
+/* 地名 考据: the original name beside the city's has no room in this header (陈留 原版 兖州 曹操 君主所在 详情 wrapped every word);
+   the 说明 lists the pairs. */
+body.phone .citypanel header .origname { display: none; }
+body.phone .citypanel header::after { content: '详情 ▴'; margin-left: auto; font-size: 12px; color: var(--dim); }
+:lang(zh-Hant) body.phone .citypanel header::after { content: '詳情 ▴'; }
+body.phone.city-open .citypanel { overflow-y: auto; overscroll-behavior: contain; width: min(340px, 46vw); z-index: 5; }
+body.phone.city-open .citypanel header::after { content: '收起 ▾'; }
+
+body.phone .dock { position: fixed; top: calc(var(--gt) + 40px); bottom: calc(var(--gb) + var(--hit) + 8px); left: auto !important; right: var(--gr); transform: none; width: auto; max-width: none; padding: 4px; }
+body.phone .dock .tabs { flex-direction: column; height: 100%; gap: 4px; }
+body.phone .dock .tabs .btn { flex: 1 1 0; min-height: 30px; min-width: 52px; padding: 0 6px; font-size: 16px; }
+body.phone .dock .acts { bottom: auto; top: 0; left: auto; right: calc(100% + 8px); width: min(310px, calc(100vw - var(--g) - var(--gr) - 80px)); max-height: calc(var(--vh) - var(--gt) - 44px - var(--gb)); overflow-y: auto; overscroll-behavior: contain; }
+body.phone .dock .acts::after { display: none; }
+body.phone .cmd { --cmd-h: var(--hit); font-size: 17px; grid-template-columns: 3.4em 1fr auto; gap: 8px; padding: 0 10px; }
+body.phone .cmd small { font-size: 12.5px; }
+body.phone .endturn { right: var(--gr); bottom: var(--gb); min-height: var(--hit); }
+/* The tag itself stays as slim as the desktop's, a little wider: on a phone's small map a padded one hid the town it names (2026-11-20). The finger's
+   target is the unseen box around it, and that keeps its size on screen whatever the tag's scale (--s: the zoom and 系统 → 地图标签). */
+body.phone .ctag { padding: 2px 6px; }
+body.phone .ctag::before { content: ''; position: absolute; inset: calc(-10px / var(--s, 1)) calc(-6px / var(--s, 1)); }
+body.phone .ctag.news::before { inset: auto; }
+
+/* ---------- 战场 ---------- */
+body.phone .warbar, body.phone.flat2d .warbar { top: var(--gt); left: var(--g); transform: none; max-width: calc(100vw - var(--g) - var(--gr) - 76px); min-height: 32px; padding: 1px 10px; gap: 10px; font-size: 13px; overflow: hidden; }
+body.phone .warbar .day, body.phone.flat2d .warbar .day { font-size: 16px; }
+body.phone .warbar .side b, body.phone.flat2d .warbar .side b { font-size: 14px; }
+body.phone .warbar .side { gap: 5px; }
+body.phone .warbar .viewmode { display: none; }
+body.phone[data-screen="war"] .logbox { display: none; }
+
+body.phone .wardock, body.phone.flat2d .wardock { right: var(--gr); bottom: var(--gb); padding: 4px; gap: 4px; }
+body.phone .wardock > .btn { min-height: var(--hit); padding: 0 12px; font-size: 15px; }
+body.phone .wardock .turnpair { padding: 4px; gap: 4px; } body.phone .wardock .turnpair .btn { min-height: 38px; min-width: 38px; }
+body.phone .deploybtn, body.phone.flat2d .deploybtn { top: auto; left: auto; right: var(--gr); bottom: calc(var(--gb) + var(--hit) + 16px); width: auto; max-width: 300px; padding: 6px 10px; gap: 10px; }
+body.phone .deploybtn b { font-size: 18px; letter-spacing: 2px; } body.phone .deploybtn p { font-size: 12px; line-height: 1.4; } body.phone .deploybtn .btn { min-height: var(--hit); white-space: nowrap; }
+
+/* The general's card: bottom left, name and bars; his commands leave the card for the right thumb, above the dock. */
+body.phone .warcards, body.phone.flat2d .warcards { left: var(--g); right: auto; bottom: var(--gb); width: 236px; flex-direction: column-reverse; align-items: stretch; gap: 6px; }
+body.phone .unitpanel, body.phone.flat2d .unitpanel { flex: none; width: auto; max-width: none; padding: 5px 8px; grid-template-columns: 48px minmax(0, 1fr); gap: 2px 8px; align-items: start; }
+body.phone .unitpanel > img, body.phone.flat2d .unitpanel > img { width: 48px; height: 64px; }
+body.phone .unitpanel h3, body.phone.flat2d .unitpanel h3 { font-size: 19px; line-height: 1.1; }
+body.phone .unitpanel .head { gap: 8px; }
+body.phone .unitpanel .bar { font-size: 11px; grid-template-columns: 1em minmax(0, 1fr) 4.2em; }
+body.phone .unitpanel dl { grid-template-columns: repeat(2, auto 1fr); gap: 0 6px; margin: 0; font-size: 12px; line-height: 1.35; }
+body.phone .unitpanel .gear { font-size: 12px; line-height: 1.3; }
+body.phone .unitpanel .hint, body.phone.flat2d .unitpanel .hint { font-size: 11.5px; line-height: 1.3; white-space: normal; grid-column: 1 / -1; }
+body.phone:not(.card-open) .unitpanel dl, body.phone:not(.card-open) .unitpanel .gear { display: none; }
+body.phone .unitpanel.compare { position: fixed; left: auto; right: var(--gr); top: calc(var(--gt) + 40px); width: 220px; }
+body.phone .unitpanel.compare .hint { display: none; }
+body.phone .unitpanel .acts, body.phone.flat2d .unitpanel .acts { position: fixed; right: var(--gr); bottom: calc(var(--gb) + var(--hit) + 14px); width: 216px; max-width: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+body.phone .unitpanel .acts .btn, body.phone.flat2d .unitpanel .acts .btn { min-height: var(--hit); min-width: 0; padding: 2px 8px; font-size: 15px; white-space: nowrap; background: linear-gradient(var(--btn-a), var(--btn-b)); }
+body.phone .unitpanel .acts .btn small { display: block; font-size: 11px; margin: 0; color: var(--gold); }
+body.phone .unitpanel .acts .movego { grid-column: 1; }
+
+/* 计略 and 攻击: the panel takes the left side (the card folds away under it); its commit button is a full thumb high. */
+body.phone .actpanel { left: var(--g); top: auto; bottom: var(--gb); width: 264px; height: auto; max-height: calc(var(--vh) - var(--gt) - 40px - var(--gb)); padding: 6px 8px 8px; gap: 4px; }
+/* Battlefield general roster on a phone: compact pull-down button under the top bar; open, a 2-column translucent drawer. */
+body.phone .warroster, body.phone.flat2d .warroster { left: var(--g); top: calc(var(--gt) + 38px); z-index: 6; width: min(296px, calc(100vw - var(--g) - var(--gr))); max-height: calc(var(--vh) - var(--gt) - var(--gb) - 46px); padding: 6px; background: var(--lacquer-95); }
+body.phone .warroster.shut, body.phone.flat2d .warroster.shut { width: auto; padding: 0; }
+body.phone .warroster .wr-list, body.phone.flat2d .warroster .wr-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+body.phone .warroster.shut .wr-list, body.phone.flat2d .warroster.shut .wr-list { display: none; }
+body.phone .warroster.shut .wr-head, body.phone.flat2d .warroster.shut .wr-head { min-height: 32px; padding: 2px 10px; font-size: 13px; }
+body.phone .warroster .wr-row, body.phone.flat2d .warroster .wr-row { min-height: 38px; padding: 5px 7px; font-size: 13.5px; }
+body.phone[data-screen="war"]:has(.warroster:not([hidden])) .toast { left: calc(var(--g) + var(--roster-w, 0px) + 8px); max-width: calc(100vw - var(--g) - var(--roster-w, 0px) - 8px - var(--gr)); }
+body.phone:has(.actpanel) .unitpanel:not(.compare) { display: none; }
+body.phone .actpanel .ap-head > b { font-size: 18px; }
+body.phone .actpanel .ap-body .btn { min-height: 40px; font-size: 15px; padding: 2px 8px; }
+body.phone .actpanel .ap-info { min-height: 3em; font-size: 12px; line-height: 1.4; }
+body.phone .actpanel .ap-sum p { font-size: 12.5px; line-height: 1.4; }
+body.phone .actpanel .ap-btns .btn { min-height: var(--hit); }
+
+/* ---------- Fixes over ui.css's narrow-window rules (they move things for a narrow desktop window, not for a phone) ---------- */
+body.phone .endturn { top: auto; bottom: var(--gb); right: var(--gr); padding-inline: 14px; }
+body.phone .wardock, body.phone.flat2d .wardock { left: auto; flex-wrap: nowrap; }
+body.phone .citypanel { width: 272px; }
+body.phone .citypanel .stats { font-size: 13px; }
+body.phone .warcards { z-index: 3; }
+
+/* ---------- 标题与开局 ---------- */
+body.phone .tt-foot { font-size: 11px; line-height: 1.4; }
+body.phone .tt-menu .btn { min-height: var(--hit); }
+body.phone .setup { gap: 6px; padding: var(--gt) calc(var(--gr) + 104px) var(--gb) var(--g); }
+body.phone .setup > :first-child { margin-top: 0; }
+body.phone .setup h2 { font-size: 21px; letter-spacing: 3px; text-shadow: 0 2px 0 #4a1408; }
+body.phone .levels { gap: 8px; width: 100%; justify-content: center; }
+body.phone .level { width: auto; flex: 0 1 200px; padding: 5px 8px; }
+body.phone .level b { font-size: 11px; letter-spacing: 2px; } body.phone .level .lv-name { font-size: 20px; margin: 0; } body.phone .level small { font-size: 11.5px; line-height: 1.3; display: block; }
+body.phone .level .cheat { margin-top: 3px; padding: 2px 4px; font-size: 11.5px; min-height: 28px; }
+body.phone .setup .opt, body.phone .setup-opts .opt { margin-top: 0; padding: 3px 8px; font-size: 12px; letter-spacing: 0; min-height: 30px; }
+body.phone .setup-opts { gap: 6px; }
+body.phone .rulers { display: flex; grid-template-columns: none; justify-content: flex-start; gap: 8px; width: 100%; overflow-x: auto; overscroll-behavior: contain; padding: 6px 2px 4px; flex: none; }
+body.phone .ruler { flex: 0 0 108px; height: clamp(132px, calc(var(--vh) - 214px), 250px); }
+body.phone .ruler:hover, body.phone .ruler.on { transform: none; }
+body.phone .ruler img { height: calc(100% - 44px); }
+body.phone .ruler .meta { padding: 16px 6px 4px; }
+body.phone .ruler b { font-size: 18px; letter-spacing: 1px; } body.phone .ruler small { font-size: 11px; line-height: 1.3; } body.phone .ruler small.towns { display: none; } body.phone .ruler .rstat { font-size: 11px; gap: 4px; }
+body.phone .setup-foot { position: fixed; right: var(--gr); bottom: var(--gb); width: 92px; margin: 0; padding: 0; flex-direction: column-reverse; gap: 8px; background: none; }
+body.phone .setup-foot .btn { min-height: var(--hit); width: 100%; padding-inline: 4px; }
+/* A colour worked out in ui.css (--lacquer-95), not color-mix(): an Android WebView older than Chrome 111 drops a
+   background with color-mix() to transparent, and the map showed through the command list (好心的王er狗@bilibili). */
+body.phone .dock .acts, body.phone .actpanel, body.phone .modal, body.phone .sysmenu-list, body.phone .mappick { background: var(--lacquer-95); }
+body.phone .ruler { height: clamp(124px, calc(var(--vh) - 232px), 250px); }
+
+/* ---------- 白兵 ---------- */
+body.phone .tq-formation h2 { font-size: 30px; } body.phone .tq-form-head { padding-top: var(--gt); } body.phone .tq-form-foot { padding-bottom: var(--gb); }
+body.phone .tq-forms { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding-inline: var(--g) var(--gr); }
+body.phone .tq-form { grid-template-columns: 56px minmax(0, 1fr); padding: 6px 8px 6px 4px; column-gap: 6px; } body.phone .tq-form:hover { transform: none; }
+body.phone .tq-form b { font-size: 21px; } body.phone .tq-form small { font-size: 11.5px; line-height: 1.3; margin-top: 2px; } body.phone .tq-form-svg svg { height: 60px; }
+body.phone .tq-formation .tq-deploy { min-height: var(--hit); padding: 6px 28px; font-size: 20px; }
+body.phone .tq-peeknote { font-size: 0; } /* its wording is about the Enter key; the 部署 button beside it says the same */
+body.phone .tq-top { top: var(--gt); left: var(--g); right: var(--gr); gap: 8px; }
+body.phone .tq-card { grid-template-columns: 40px 1fr; gap: 8px; padding: 4px 8px 4px 4px; max-width: 300px; border-radius: 10px; }
+body.phone .tq-card.r { grid-template-columns: 1fr 40px; padding: 4px 4px 4px 8px; }
+body.phone .tq-face { width: 40px; height: 50px; border-radius: 7px; }
+body.phone .tq-name { font-size: 17px; } body.phone .tq-name small { font-size: 11px; margin-left: 4px; }
+body.phone .tq-bar { height: 13px; line-height: 13px; margin-top: 2px; } body.phone .tq-bar span { font-size: 11px; line-height: 13px; }
+body.phone .tq-tp { margin-top: 3px; gap: 2px; } body.phone .tq-tp i { width: 5px; height: 5px; } body.phone .tq-tp em { font-size: 11px; }
+body.phone .tq-fx { margin-top: 2px; } body.phone .tq-fx span { font-size: 11px; line-height: 16px; }
+body.phone .tq-round { width: 50px; height: 50px; } body.phone .tq-round b { font-size: 22px; } body.phone .tq-round small, body.phone .tq-round em { font-size: 9px; letter-spacing: .1em; padding: 0; }
+body.phone .tq-feed { display: none; }
+/* The console: orders at the bottom left (two rows of two), tactics and the controls at the bottom right; every button a thumb's size. */
+body.phone .tq-console { left: var(--g); right: var(--gr); bottom: var(--gb); transform: none; width: auto; max-width: none; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 8px; padding: 5px 8px; border-radius: 12px; }
+body.phone .tq-orders { flex-wrap: wrap; gap: 4px 8px; align-content: end; }
+body.phone .tq-side { flex-direction: column; align-items: stretch; gap: 4px; }
+body.phone .tq-row { gap: 3px; } body.phone .tq-all { padding-left: 0; border-left: 0; }
+body.phone .tq-kind { font-size: 17px; min-width: 2.1em; } body.phone .tq-kind small { font-size: 10px; }
+body.phone .tq-seg { padding: 2px; gap: 2px; }
+body.phone .tq-cmd { min-height: 38px; min-width: 40px; padding: 2px 6px; font-size: 15px; justify-content: center; }
+body.phone .tq-tactics { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+body.phone .tq-tac { min-height: 36px; padding: 2px 5px 2px 8px; font-size: 14px; gap: 4px; } body.phone .tq-tac:hover { transform: none; } body.phone .tq-tac span { font-size: 12px; min-width: 19px; height: 19px; }
+body.phone .tq-ctrl { margin-left: 0; gap: 4px; justify-content: flex-end; }
+body.phone .tq-btn { min-height: 36px; padding: 2px 9px; font-size: 14px; } body.phone .tq-speed .tq-btn { padding: 2px 7px; min-width: 34px; }
+body.phone .tq-ask { bottom: auto; top: 50%; transform: translate(-50%, -50%); padding: 10px 14px; max-width: calc(100vw - var(--g) - var(--gr)); z-index: 4; }
+body.phone .tq-ask p { font-size: 15px; margin-bottom: 6px; } body.phone .tq-ask .tq-btn { min-height: var(--hit); padding-inline: 22px; font-size: 17px; }
+body.phone .tq-result { padding: 12px 18px; max-height: calc(var(--vh) - 16px); overflow-y: auto; } body.phone .tq-result h2 { font-size: 32px; margin: 2px 0 8px; } body.phone .tq-result .tq-btn { min-height: var(--hit); padding-inline: 24px; }
+
+/* ---------- 单挑 ---------- */
+body.phone .tq-dcard { top: calc(9vh + 4px); width: min(36vw, 300px); grid-template-columns: 44px 1fr; gap: 8px; padding: 4px 10px 4px 4px; border-radius: 10px; }
+body.phone .tq-dcard.l { left: var(--g); } body.phone .tq-dcard.r { right: var(--gr); grid-template-columns: 1fr 44px; padding: 4px 4px 4px 10px; }
+body.phone .tq-dcard b { font-size: 21px; } body.phone .tq-dcard em { font-size: 12px; letter-spacing: .08em; }
+body.phone .tq-dface { width: 44px; height: 44px; }
+body.phone .tq-duel-vs { font-size: 34px; top: calc(9vh + 8px); }
+body.phone .tq-duel-mid { bottom: var(--gb); min-width: 0; width: calc(100vw - var(--g) - var(--gr)); padding: 6px 8px; border-radius: 12px; }
+body.phone .tq-dlog { margin-bottom: 4px; font-size: 13px; } body.phone .tq-dlog p:nth-child(n+2) { display: none; }
+body.phone .tq-duel-acts { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; margin-top: 2px; }
+body.phone .tq-btn.dcmd { min-width: 0; min-height: var(--hit); padding: 3px 2px; } body.phone .tq-btn.dcmd span { font-size: 16px; } body.phone .tq-btn.dcmd small { font-size: 10.5px; overflow: hidden; text-overflow: ellipsis; }
+body.phone .tq-dauto { right: 10px; min-height: 30px; }
+body.phone .tq-hint { font-size: 12px; }
+/* (console, second pass) orders two to a line on the left, the six tactics beside them, the controls in one line under both */
+body.phone .tq-side { display: contents; }
+body.phone .tq-orders { grid-column: 1; grid-row: 1; justify-content: flex-start; align-self: center; }
+body.phone .tq-tactics { grid-column: 2; grid-row: 1; grid-template-columns: repeat(3, auto); align-self: center; }
+body.phone .tq-ctrl { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; }
+body.phone .tq-console { gap: 4px 8px; }
+body.phone .tq-kind { min-width: 1.9em; text-align: right; }
+/* (narrow phones) the bars stay one line: the figures give way, the buttons never do */
+body.phone .warbar, body.phone.flat2d .warbar { flex-wrap: nowrap; white-space: nowrap; }
+body.phone .topbar > * { flex: none; } body.phone .topbar .res { flex: 0 1 auto; min-width: 0; overflow: hidden; }
+body.phone .topbar .res > span { white-space: nowrap; }
+/* iOS Safari: a tap reaches the document's click handler (src/phone.js) only from an element it takes for clickable; and it zooms
+   the page in on a focused field whose text is under 16 px, which the player could not undo (the page's own zoom is off). */
+body.phone .citypanel header, body.phone .unitpanel { cursor: pointer; }
+body.phone input, body.phone select, body.phone textarea, body.phone .modal .amount { font-size: 16px; }
+
+/* ---------- 2026-11-14 真机反馈 ---------- */
+/* 开局: the difficulty cards were as large as on a desktop. One thin row for them, one line for the switches, the height to the rulers. */
+body.phone .setup { gap: 4px; }
+body.phone .setup h2 { font-size: 17px; letter-spacing: 2px; line-height: 1.2; }
+body.phone .levels { gap: 6px; align-items: stretch; }
+body.phone .level { flex: 1 1 0; max-width: 230px; padding: 3px 8px; display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 6px; text-align: left; }
+body.phone .level b { font-size: 9.5px; letter-spacing: 1px; grid-column: 1 / -1; line-height: 1.2; }
+body.phone .level .lv-name { font-size: 17px; letter-spacing: 2px; line-height: 1.15; }
+body.phone .level small { font-size: 10.5px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.phone .level .cheat { grid-column: 1 / -1; margin-top: 2px; padding: 1px 4px; font-size: 10.5px; min-height: 24px; }
+body.phone .setup-opts { flex-wrap: nowrap; justify-content: flex-start; width: 100%; overflow-x: auto; gap: 5px; flex: none; }
+body.phone .setup .opt, body.phone .setup-opts .opt { flex: none; padding: 2px 7px; font-size: 11px; min-height: 28px; white-space: nowrap; }
+body.phone .ruler { height: clamp(140px, calc(var(--vh) - 168px), 270px); flex-basis: 116px; }
+
+/* 白兵: the console covered the field. It is no longer a panel: the orders stand in the bottom left corner, the tactics in the
+   bottom right, the controls in one line along the bottom, each on its own dark plate; the middle of the screen is the field's. */
+body.phone .tq-top { gap: 6px; }
+body.phone .tq-card { max-width: 250px; padding: 3px 6px 3px 3px; grid-template-columns: 34px 1fr; gap: 6px; }
+body.phone .tq-card.r { grid-template-columns: 1fr 34px; padding: 3px 3px 3px 6px; }
+body.phone .tq-face { width: 34px; height: 42px; }
+body.phone .tq-name { font-size: 15px; } body.phone .tq-bar { height: 11px; line-height: 11px; margin-top: 2px; } body.phone .tq-bar span { font-size: 10px; line-height: 11px; }
+body.phone .tq-tp { margin-top: 2px; } body.phone .tq-tp i { width: 4px; height: 4px; }
+body.phone .tq-round { width: 40px; height: 40px; } body.phone .tq-round b { font-size: 18px; } body.phone .tq-round small, body.phone .tq-round em { display: none; }
+body.phone .tq-console { position: fixed; inset: 0; left: 0; right: 0; bottom: 0; transform: none; width: auto; display: block; padding: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; border-radius: 0; pointer-events: none; animation: none; }
+body.phone .tq-console::before, body.phone .tq-console::after { display: none; }
+body.phone .tq-orders, body.phone .tq-tactics, body.phone .tq-ctrl { position: fixed; pointer-events: auto; background: rgba(18, 12, 8, .66); border: 1px solid var(--tq-line, #6a5030); border-radius: 10px; padding: 3px; }
+body.phone .tq-orders { left: var(--g); bottom: calc(var(--gb) + 42px); flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 2px; }
+body.phone .tq-row { gap: 2px; } body.phone .tq-kind { font-size: 15px; min-width: 1.7em; text-align: center; } body.phone .tq-kind small { display: none; }
+body.phone .tq-seg { padding: 1px; gap: 1px; background: none; box-shadow: none; }
+body.phone .tq-cmd { min-height: 34px; min-width: 36px; padding: 0 4px; font-size: 15px; letter-spacing: 0; } body.phone .tq-cmd i { display: none; }
+body.phone .tq-tactics { right: var(--gr); bottom: calc(var(--gb) + 42px); grid-template-columns: repeat(2, auto); gap: 3px; }
+body.phone .tq-tac { min-height: 34px; font-size: 13px; padding: 0 4px 0 6px; }
+body.phone .tq-ctrl { left: 50%; right: auto; bottom: var(--gb); transform: translateX(-50%); margin: 0; gap: 3px; justify-content: center; white-space: nowrap; }
+body.phone .tq-ctrl .tq-btn { min-height: 32px; }
+
+/* 命令演出: the picture is 640 px wide on a desktop, taller than a phone's screen. Here it keeps to about three quarters of the
+   height, caption included, and is smoothed (a pixelated reduction to an uneven size drops strokes). */
+body.phone .vig.floating { width: min(94vw, calc((var(--vh) * .78 - 62px) * 1.5 + 28px)); padding: 6px 6px 6px; }
+body.phone .vig canvas { image-rendering: auto; }
+body.phone .vig-frame { padding: 4px; }
+body.phone .vig-cap { margin-top: 4px; padding: 0 26px; font-size: 15px; line-height: 1.5; letter-spacing: 1px; min-height: 1.5em; }
+body.phone .vig-more { right: 10px; bottom: 6px; font-size: 12px; }
+
+/* 战略地图: panels that used to land on each other.
+   - a toast stood over the top of the command list: it goes to the left, under the status bar;
+   - the AI turn's plaque stood over the city panel: it goes under the status bar, in the middle;
+   - the quality offer stood over 结束本月行动: it goes above it;
+   - while a city is being picked on the map, the dock, the city panel and 结束本月行动 are put away (the map is what is wanted);
+   - the city panel folded open and the command list do not stand together: opening one puts the other away;
+   - on a narrow phone the folded city panel gives way to the open command list. */
+body.phone .toast { left: var(--g); transform: none; max-width: min(46vw, 360px); }
+body.phone .toast.out { transform: translateY(-8px); }
+/* 战场, the 攻击 / 计略 panel open (left column, its head under the status bar when it is at its full height): the toast, which the
+   phone shows for every line of the war's record, stood on that head — the caster's name and 全军机动力 — for its 2.4 s at each
+   step (2026-11-18). It stands right of the panel, and under the target's card once one is picked (tests/phonetarget.test.mjs). */
+body.phone:has(.actpanel) .toast { left: calc(var(--g) + 264px + 8px); max-width: calc(100vw - var(--g) - 264px - 16px - var(--gr)); }
+body.phone:has(.actpanel):has(.unitpanel.compare) .toast { top: calc(var(--gt) + 40px + 46px); }
+body.phone .aiturn { bottom: auto; top: calc(var(--gt) + 40px); }
+body.phone .qnotice { bottom: calc(var(--gb) + var(--hit) + 12px); }
+body.phone.picking #ui > :is(.endturn, .dock, .citypanel) { display: none; }
+body.phone.city-open .dock .acts { display: none; }
+body.phone .mappick { z-index: 16; }
+@media (max-width: 760px) { body.phone:has(.dock .acts:not([hidden])) .citypanel { display: none; } }
+
+/* ---------- 2026-11-14 真机反馈（二） ---------- */
+/* 单挑: the two plates and the command panel took the scene. The plates are one thin strip each in the top letterbox bar (name,
+   figures and 体力 on one line over the bar); the commands are one low row along the bottom with no panel behind them; the log
+   is a single line over that row. The middle of the screen is the fight's. */
+body.phone .tq-dcard { top: max(2px, var(--gt) - 4px); width: min(38vw, 320px); grid-template-columns: 30px 1fr; gap: 6px; padding: 2px 8px 3px 3px; border-radius: 8px; backdrop-filter: none; background: rgba(14, 10, 6, .78); }
+body.phone .tq-dcard.r { grid-template-columns: 1fr 30px; padding: 2px 3px 3px 8px; }
+body.phone .tq-dface { width: 30px; height: 34px; border-radius: 5px; }
+body.phone .tq-dinfo { grid-template-columns: auto auto 1fr; align-items: baseline; gap: 0 8px; }
+body.phone .tq-dcard.r .tq-dinfo { direction: rtl; } body.phone .tq-dcard.r .tq-dinfo > * { direction: ltr; }
+body.phone .tq-dcard b { font-size: 17px; letter-spacing: .04em; white-space: nowrap; }
+body.phone .tq-dinfo small { font-size: 11px; letter-spacing: 0; white-space: nowrap; }
+body.phone .tq-dfoot { grid-column: 3; grid-row: 1; justify-self: end; white-space: nowrap; } body.phone .tq-dcard.r .tq-dfoot { justify-self: start; }
+body.phone .tq-dcard em { font-size: 11.5px; letter-spacing: 0; }
+body.phone .tq-dbar { grid-column: 1 / -1; grid-row: 2; height: 6px; } body.phone .tq-dbar i, body.phone .tq-dbar u { height: 6px; }
+body.phone .tq-duel-vs { display: none; }
+body.phone .tq-duel { background: none; }
+body.phone .tq-duel-mid { bottom: max(3px, var(--gb) - 12px); width: calc(100vw - var(--g) - var(--gr)); min-width: 0; padding: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; }
+body.phone .tq-dlog { margin: 0 0 3px; font-size: 12.5px; justify-items: center; } body.phone .tq-dlog p { padding: 1px 10px; background: rgba(0, 0, 0, .55); width: fit-content; max-width: 100%; }
+body.phone .tq-hint { margin: 0 0 2px; font-size: 11.5px; text-shadow: 0 1px 3px #000; }
+body.phone .tq-duel-acts { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 3px; margin: 0; }
+body.phone .tq-btn.dcmd { display: flex; align-items: baseline; justify-content: center; gap: 4px; min-height: 36px; padding: 0 2px; background: rgba(30, 20, 12, .82); }
+body.phone .tq-btn.dcmd.primary { background: linear-gradient(180deg, #b8402cee, #7a1f12ee); }
+body.phone .tq-btn.dcmd span { font-size: 15px; } body.phone .tq-btn.dcmd small { font-size: 10px; } body.phone .tq-btn.dcmd small em.up { display: inline; }
+body.phone .tq-dauto { top: auto; bottom: calc(100% + 3px); right: 0; transform: none; min-height: 26px; padding: 0 10px; font-size: 11.5px; background: rgba(30, 20, 12, .82); }
+
+/* 标题: the menu stood on the three lines at the foot. The buttons are one low row, the lines smaller; titlescreen.js measures
+   both and gives the landscape what is left. */
+body.phone .tt-menu, body.phone .tt-menu:has(> :nth-child(3)) { display: flex; flex-direction: row; justify-content: center; gap: 8px; min-width: 0; width: max-content; max-width: calc(100vw - var(--g) - var(--gr)); }
+body.phone .tt-menu .btn { min-height: 40px; padding: 3px 18px; font-size: 16px; letter-spacing: 3px; white-space: nowrap; }
+body.phone .tt-menu:has(> :nth-child(3)) > :not(:first-child) { letter-spacing: 3px; }
+body.phone .tt-menu .btn small { font-size: 10.5px; letter-spacing: 0; margin-top: 0; }
+body.phone .tt-foot { bottom: max(4px, var(--gb) - 12px); left: var(--g); right: var(--gr); }
+body.phone .tt-foot p { margin: 0; font-size: 9.5px; line-height: 1.3; }
+body.phone .tt-foot .free { font-size: 11px; } body.phone .tt-foot .maker { font-size: 10.5px; }
+body.phone .tt-press { font-size: 14px; }
+/* 白兵: the squads' tags were drawn at desktop size over men a phone shows much smaller, and hid them. Smaller tags, see-through. */
+body.phone .tk { opacity: .85; }
+body.phone .tk .sb { width: 28px; height: 4px; transform: translateY(12px) scale(var(--label-k, 1)); }
+body.phone .tk .sb::before { width: 12px; height: 12px; font-size: 9px; line-height: 12px; border-radius: 3px; right: calc(100% + 2px); }
+/* the corner plates are thin glass over the field's edges: a unit that strays under one still shows through */
+body.phone .tq-orders, body.phone .tq-tactics { background: rgba(18, 12, 8, .36); border-color: rgba(120, 96, 60, .5); }
+body.phone .tq-cmd:not(.on) { color: #f3e6c8; text-shadow: 0 1px 2px #000; }
+/* 单挑: the plates stand just under the top letterbox bar (the bar is drawn over the HUD). */
+body.phone .tq-dcard { top: calc(9vh + 3px); }
+
+/* ---------- 2026-11-14 交互评审后的修改 ---------- */
+/* 战场: 威胁范围 had no way in on the flat map (its button rides with the 3D turn pair, hidden there). The pair's plate becomes a
+   plain slot in the dock holding 威 alone; ‹ › step through our generals (the keys [ and ] on a desktop). */
+body.phone.flat2d .wardock .turnpair, body.phone .wardock .turnpair { display: contents; }
+body.phone.flat2d .wardock .turnbtn { display: none; }
+body.phone .wardock .threatbtn, body.phone .wardock .cyclebtn { min-height: var(--hit); min-width: 40px; padding: 0 8px; font-size: 16px; }
+body.phone .wardock .cyclebtn { font-size: 22px; line-height: 1; }
+body.phone .wardock > .btn { padding: 0 9px; }
+body.phone .wardock > .btn.primary { margin-left: 10px; } /* 结束本日 stands a little apart from what the thumb taps all turn */
+/* 战略地图: the last command of a long list ran under 结束本月行动 */
+body.phone .dock .acts { max-height: calc(var(--vh) - var(--gt) - 44px - var(--gb) - var(--hit) - 12px); }
+/* The longest lists (军, 町) are six rows: on a short screen (360 px high: a phone's 显示大小 one step up) the sixth, 任命,
+   fell below the list's edge, and a WebView shows no scrollbar, so it looked gone (0.4.3). The rows grow shorter first, to
+   34 px at most: the max-height above, less the list's 12 px padding, five 2 px gaps and its 2 px border, over six rows. */
+body.phone .dock .acts .cmd { --cmd-h: clamp(34px, calc((var(--vh) - var(--gt) - 44px - var(--gb) - var(--hit) - 12px - 24px) / 6), var(--hit)); }
+/* Shorter still, the list scrolls: its foot fades while there is more below (.more, commandDock in app.js). */
+body.phone .dock .acts.more { -webkit-mask-image: linear-gradient(#000 calc(100% - 30px), transparent); mask-image: linear-gradient(#000 calc(100% - 30px), transparent); }
+/* 战报 (☰ 系统 → 战报) */
+body.phone .logbook { max-height: calc(var(--vh) - 130px); overflow-y: auto; overscroll-behavior: contain; font-size: 13.5px; line-height: 1.5; min-width: min(520px, 80vw); }
+body.phone .logbook p { margin: 0; padding: 3px 2px; border-bottom: 1px dashed #ffffff14; } body.phone .logbook em { color: var(--bad); font-style: normal; } body.phone .logbook strong { color: var(--good); font-weight: 600; }
+/* 白兵: what a tactic does, shown on its first tap; 全军撤退 stands at the far end of the line, away from 自动 and the speeds */
+body.phone .tq-told { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--gb) + 44px); max-width: min(520px, calc(100vw - var(--g) - var(--gr) - 380px)); min-width: 220px; padding: 4px 10px; border-radius: 8px; background: rgba(14, 10, 6, .88); border: 1px solid var(--tq-gold2, #a58a4c); font-size: 12.5px; line-height: 1.45; text-align: center; pointer-events: none; }
+body.phone .tq-told b { color: #ffe08a; font-weight: 600; white-space: nowrap; }
+body.phone .tq-tac.armed, body.phone .tq-btn.armed { outline: 2px solid #ffe08a; outline-offset: 1px; }
+body.phone .tq-ctrl .tq-btn.warn { order: -1; margin-right: 14px; }
+
+/* ---------- 2026-11-14 打磨（一）：固定槽位、系统页签、加减步进 ---------- */
+/* 战场: 攻击 / 计略 / 再施 / 撤销移动 keep their four cells at the foot of the stack (app.js warUnit); what the place offers and the
+   answer to a move come and go in the row above. */
+body.phone .unitpanel .acts .movego { grid-column: auto; }
+body.phone .unitpanel .acts .gap { visibility: hidden; }
+body.phone .unitpanel .acts .btn.slot:disabled { opacity: 1; background: rgba(24, 16, 10, .84); color: #8d806a; border-color: rgba(120, 96, 60, .45); box-shadow: none; text-shadow: none; }
+body.phone .unitpanel .acts .btn.slot:disabled small { color: var(--dim); }
+body.phone .unitpanel .acts .btn.recast small { margin-left: 0; font-size: 11px; }
+/* ☰ 系统: one group at a time under a row of tabs; every row a thumb high, two to a line. */
+body.phone .sysmenu-list { display: flex; flex-direction: column; flex-wrap: nowrap; gap: 6px; align-items: stretch; width: min(400px, calc(100vw - var(--g) - var(--gr))); padding: 6px; }
+body.phone .sysmenu-list[hidden] { display: none; }
+body.phone .sysmenu-col { display: contents; }
+body.phone .sysmenu-tabs { display: flex; gap: 4px; position: sticky; top: -6px; z-index: 1; margin: -6px -6px 0; padding: 6px 6px 4px; background: var(--lacquer); border-bottom: 1px solid rgba(220, 180, 110, .2); }
+body.phone .sysmenu-list .sysmenu-tabs .btn { flex: 1 1 0; min-width: 0; min-height: 40px; padding: 0 2px; font-size: 15px; text-align: center; opacity: .72; }
+body.phone .sysmenu-list .sysmenu-tabs .btn[aria-selected="true"] { opacity: 1; color: #ffe9b0; border-color: var(--gold); box-shadow: inset 0 -3px 0 var(--gold); }
+body.phone .sysmenu-group, body.phone .sysmenu-group + .sysmenu-group { display: none; padding: 0; border: 0; }
+body.phone .sysmenu-group.on { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+body.phone .sysmenu-list .sysmenu-group .btn { min-height: 42px; font-size: 14px; padding: 2px 10px; white-space: normal; line-height: 1.25; }
+body.phone .sysmenu-list .sysrange, body.phone .sysmenu-list .sysmenu-quick { grid-column: 1 / -1; }
+/* The desktop's shared rows (声音｜曲目, 地名｜欣赏模式, 回到标题｜退出游戏) save a 1024x600 window's height; in a phone's two-column grid a
+   pair in one cell squeezed both buttons into half of it, 曲目 Remix on two lines (2026-11-18), so here each button takes a cell. */
+body.phone .sysmenu-list .sysmenu-pair { display: contents; }
+body.phone .sysmenu-list .sysmenu-quick { gap: 6px; } body.phone .sysmenu-list .sysmenu-quick .btn { font-size: 14px; flex: 1 1 0; }
+body.phone .sysrange > span { order: 0; } body.phone .sysrange .less { order: 1; } body.phone .sysrange input { order: 2; flex: 1 1 auto; width: auto; height: 32px; } body.phone .sysrange .more { order: 3; } body.phone .sysrange small { order: 4; min-width: 40px; font-size: 13px; }
+body.phone .sysmenu-list .sysrange .nudge { min-height: 36px; min-width: 44px; padding: 0; font-size: 20px; text-align: center; }
+/* 数量: − and ＋ at the slider's ends (ui.js sliders); the row stays one line, the limit in small under it. */
+body.phone .modal .row:has(.nudge) { flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+body.phone .modal .row:has(.nudge) > label { min-width: 2.2em; }
+body.phone .modal .row:has(.nudge) .btn.mini { padding-inline: 8px; white-space: nowrap; }
+body.phone .modal .row .btn.nudge { min-width: var(--hit); padding: 0; font-size: 22px; line-height: 1; }
+body.phone .modal .row:has(.nudge) input[type=range] { flex: 1 1 90px; min-width: 90px; width: auto; }
+body.phone .modal .row:has(.nudge) .amount { width: 4.4em; }
+body.phone .modal .row:has(.nudge) > small.hint { flex: 0 0 100%; text-align: right; margin-top: -4px; font-size: 11px; }
+body.phone .unitpanel .acts, body.phone.flat2d .unitpanel .acts { grid-auto-rows: 46px; }
+
+/* ---------- 2026-11-14 打磨（二） ---------- */
+/* 计略: a row tapped once is marked and told below; one that cannot be cast still takes the tap (it is told why). */
+body.phone .actpanel .ap-body.strats .btn.off { opacity: .55; }
+body.phone .actpanel .ap-info .again { font-style: normal; color: var(--gold); margin-left: 6px; white-space: nowrap; }
+body.phone .actpanel .ap-info em { display: block; }
+/* 攻击: the two generals' figures in the confirmation */
+body.phone .actpanel .ap-sum .ap-vs { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.phone .actpanel .ap-sum .ap-vs b { display: inline-block; min-width: 3.2em; margin-right: 4px; }
+body.phone .actpanel .ap-sum .ap-vs.mine b { color: #8fc4ff; } body.phone .actpanel .ap-sum .ap-vs.foe b { color: #ff9a86; }
+/* 白兵: the order cells a thumb's size */
+body.phone .tq-cmd { min-height: 40px; min-width: 40px; font-size: 16px; }
+body.phone .tq-kind { font-size: 16px; }
+body.phone .tq-tac { min-height: 40px; font-size: 14px; }
+body.phone .tq-ctrl .tq-btn { min-height: 36px; }
+/* 单挑: each command is its name over what it will do, whole; 改自动 leaves the thumb's row for the top, between the two plates. */
+body.phone .tq-btn.dcmd { flex-direction: column; align-items: center; justify-content: center; gap: 0; min-height: var(--hit); padding: 2px; }
+body.phone .tq-btn.dcmd span { font-size: 16px; line-height: 1.15; } body.phone .tq-btn.dcmd small { font-size: 11px; line-height: 1.2; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* (the row's box stands 9vh + 14px above the foot, ui.css .tq.dueling; the button is placed from it to hang 5px under the top bar) */
+body.phone .tq-dauto { position: absolute; top: auto; bottom: calc(var(--vh) - 18vh - 55px); right: auto; left: 50%; transform: translateX(-50%); min-height: 36px; padding: 0 14px; font-size: 13px; white-space: nowrap; }
+/* Small print: nothing a player is meant to read stays under 11 px. */
+body.phone .level b { font-size: 11px; } body.phone .level small { font-size: 11px; } body.phone .level .cheat { font-size: 11px; }
+body.phone .setup .opt, body.phone .setup-opts .opt { font-size: 12px; min-height: 32px; }
+body.phone .tt-foot p { font-size: 11px; } body.phone .tt-foot .free { font-size: 11.5px; } body.phone .tt-foot .maker { font-size: 11px; }
+body.phone .tt-menu .btn small { font-size: 11px; }
+body.phone .tq-bar { height: 13px; line-height: 13px; } body.phone .tq-bar span { font-size: 11px; line-height: 13px; }
+body.phone .tk .sb::before { width: 13px; height: 13px; font-size: 10px; line-height: 13px; }
+/* 攻击 / 计略的确认: on a short screen the summary scrolls inside the panel and the buttons keep their place at its foot. */
+body.phone .actpanel .ap-foot { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 4px; }
+body.phone .actpanel .ap-sum { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+body.phone .actpanel .ap-btns { flex: none; }
+body.phone .actpanel .ap-run { flex: none; grid-template-columns: auto var(--hit, 40px) minmax(2em, auto) var(--hit, 40px) 1fr; }
+body.phone .actpanel .ap-run .btn { min-height: var(--hit, 40px); }
+body.phone .actpanel .ap-runsum { flex: none; font-size: 12.5px; }
+body.phone .actpanel:is(.strike, .confirm) .ap-body { flex: 0 0 auto; max-height: 92px; }
+/* the foe's card: name and bars only, cards folded open or not (his gear stood in a column one character wide; his figures are in the panel) */
+html body.phone .unitpanel.compare .gear { display: none; }
+/* 开局: a switch's explanation drops down from under the row of switches */
+body.phone .setup-note { position: relative; width: 100%; height: 0; margin: -4px 0 0; z-index: 3; }
+body.phone .setup-note p { position: absolute; top: 2px; left: 0; right: 0; margin: 0; padding: 6px 10px; border-radius: 8px; background: var(--lacquer-95); border: 1px solid var(--gold); font-size: 12.5px; line-height: 1.45; text-align: left; box-shadow: 0 6px 18px #000a; }
+body.phone .setup-note b { color: var(--gold); }
+/* 战场: the row above the four slots sleeps for a moment after 确认移动 (app.js warUnit), so a run of taps does not reach 退却 */
+body.phone .unitpanel .acts .btn.asleep { pointer-events: none; opacity: .6; }
+/* Choosing a target (2026-11-17): the hint stays on a phone, the greyed 施展 / 进入白兵战 says what it waits for, and tapped
+   it lights the target rows (app.js nudgeTargets). */
+body.phone .actpanel:is(.targets, .attacks) .ap-sum .hint { display: block; }
+body.phone .actpanel .ap-btns .ap-go.idle { letter-spacing: 1px; font-size: 14px; }
+body.phone .actpanel .ap-body.targets .btn.nudge { animation: apNudge .9s ease-out; }
+@keyframes apNudge { 0%, 60% { outline: 2px solid var(--gold); outline-offset: 1px; background-color: rgba(255, 210, 122, .22); } 100% { outline: 2px solid transparent; outline-offset: 1px; } }
+/* 白兵 (third pass, o0無名0o@bilibili): the open panels stood over our own lines (the attacker's are drawn up by the left edge). The
+   orders and the tactics are folded into narrow strips by the edges: a troop type shows its name over its standing order, and a tap
+   unfolds its four orders beside it (tacticalhud.js unfold); 全军 the same; 战术 unfolds its six upwards. The camera frames the
+   field between the folded strips (tacticalview.js setInsets left / right). */
+/* (the strips stand down to the foot, beside the line of controls: five cells (将 骑 弓 步 全军) keep under the top cards at 360 px) */
+body.phone .tq-orders { background: none; border: 0; padding: 0; gap: 3px; align-items: flex-start; bottom: var(--gb); }
+body.phone .tq-orders .tq-row { display: flex; align-items: center; margin: 0; gap: 2px; padding: 2px; border-radius: 10px; background: rgba(18, 12, 8, .5); border: 1px solid rgba(120, 96, 60, .55); }
+body.phone .tq-orders .tq-seg { display: flex; width: auto; padding: 0; gap: 2px; }
+body.phone .tq-orders .tq-row:not(.open) .tq-kind, body.phone .tq-orders .tq-all .tq-kind { display: none; }
+body.phone .tq-orders .tq-row:not(.open) .tq-cmd:not(.on):not(.tq-fold), body.phone .tq-orders .tq-all:not(.open) .tq-seg { display: none; }
+body.phone .tq-orders .tq-row:not(.open) .tq-cmd.on, body.phone .tq-orders .tq-fold { width: 46px; min-width: 46px; min-height: 40px; padding: 0; flex-direction: column; justify-content: center; gap: 0; line-height: 1.05; }
+body.phone .tq-orders .tq-row:not(.open) .tq-cmd.on::before { content: attr(data-k); font-size: 11px; opacity: .8; }
+body.phone .tq-orders .tq-fold { font-size: 14px; color: #f3e6c8; background: rgba(0, 0, 0, .3); }
+body.phone .tq-orders .tq-row.open { background: rgba(14, 10, 6, .88); border-color: var(--tq-gold2, #a58a4c); }
+body.phone .tq-orders .tq-row.open .tq-kind { box-sizing: border-box; width: 46px; min-width: 46px; min-height: 40px; display: grid; place-items: center; border-radius: 8px; background: rgba(0, 0, 0, .3); }
+body.phone .tq-orders .tq-all.open .tq-fold { outline: 2px solid #ffe08a; outline-offset: -2px; }
+body.phone .tq-tactics { background: none; border: 0; padding: 0; gap: 3px; bottom: var(--gb); grid-template-columns: repeat(2, auto); }
+body.phone .tq-tactics:not(.open) .tq-tac:not(.tq-tacfold) { display: none; }
+body.phone .tq-tactics.open { padding: 3px; border-radius: 10px; background: rgba(14, 10, 6, .88); border: 1px solid var(--tq-gold2, #a58a4c); }
+body.phone .tq-tactics .tq-tacfold { grid-column: 1 / -1; order: 1; justify-self: end; width: 62px; min-height: 40px; padding: 0 4px 0 7px; }
+body.phone .tq-tactics.open .tq-tacfold { outline: 2px solid #ffe08a; outline-offset: -2px; }
+body.phone .tq-tacfold .tq-tac-live { top: -15px; right: 0; }
+body.phone .tq-orders .tq-row.none { display: none; }
+/* the shortest phones (568×320): the cells a little lower, so the five still keep under the top cards */
+@media (max-height: 340px) { body.phone .tq-orders .tq-row:not(.open) .tq-cmd.on, body.phone .tq-orders .tq-fold, body.phone .tq-orders .tq-row.open .tq-kind, body.phone .tq-orders .tq-cmd { min-height: 34px; } }

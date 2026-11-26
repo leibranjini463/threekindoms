@@ -1,0 +1,932 @@
+{
+ "land": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/land/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "record": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/record/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    0.4,
+    0.4,
+    0.5,
+    0.5,
+    0.5,
+    0.6,
+    0.3,
+    0.3,
+    1.6
+   ],
+   "blend": 0.12
+  },
+  "text": {
+   "quad": [
+    [
+     82,
+     103
+    ],
+    [
+     240,
+     78
+    ],
+    [
+     548,
+     262
+    ],
+    [
+     328,
+     348
+    ]
+   ],
+   "u": 0.88,
+   "du": 0.19,
+   "v": 0.7,
+   "dv": 0.15,
+   "su": 0.18,
+   "sv": 0.11,
+   "from": 0.62,
+   "to": 0.92
+  }
+ },
+ "industry": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/industry/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "pop": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/pop/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "disaster": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/disaster/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "conscript": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/conscript/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "move": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/move/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "search": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/search/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "reward": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/reward/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "hospital": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/hospital/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "school": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/school/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "weapons": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/weapons/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "st-fire": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-fire/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "st-water": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-water/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "st-ambush": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-ambush/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "st-rock": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-rock/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 2
+  }
+ },
+ "st-ruse": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-ruse/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "st-bow": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-bow/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 2
+  }
+ },
+ "st-magic": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-magic/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 2
+  }
+ },
+ "harvest": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/harvest/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "tax": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/tax/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "sortie": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/sortie/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "st-trap": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-trap/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 2
+  }
+ },
+ "st-rapids": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-rapids/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "st-firearrow": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-firearrow/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "st-feint": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-feint/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 5
+  }
+ },
+ "st-strife": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-strife/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 1
+  }
+ },
+ "st-lure": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-lure/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 5
+  }
+ },
+ "st-chain": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-chain/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 2
+  }
+ },
+ "st-encircle": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-encircle/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 5
+  }
+ },
+ "st-firestorm": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/st-firestorm/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "march": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/march/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "scout": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/scout/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "alms": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/alms/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "drought": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/drought/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "flood": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/flood/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "rice-buy": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/rice-buy/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "rice-sell": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/rice-sell/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "treasure": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/treasure/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12
+  }
+ },
+ "ally": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/ally/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 3
+  }
+ },
+ "poach": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/poach/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 4
+  }
+ },
+ "discord": {
+  "w": 640,
+  "h": 426,
+  "story": {
+   "src": "v2/discord/story.webp",
+   "cols": 3,
+   "rows": 3,
+   "hold": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1.6
+   ],
+   "blend": 0.12,
+   "attempt": 2
+  }
+ }
+}

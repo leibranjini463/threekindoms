@@ -1,0 +1,119 @@
+{
+ "kind": "cavalry",
+ "look": "elephant",
+ "frames": [
+  "idle_a",
+  "idle_b",
+  "walk_1",
+  "walk_2",
+  "walk_3",
+  "walk_4",
+  "gallop_1",
+  "gallop_2",
+  "gallop_3",
+  "gallop_4",
+  "windup",
+  "strike",
+  "hurt",
+  "fall",
+  "dead",
+  "cheer"
+ ],
+ "cell": [
+  165,
+  103
+ ],
+ "anchor": 79,
+ "figH": 100,
+ "ref": 73,
+ "rest": 6,
+ "clips": {
+  "idle": [
+   [
+    "idle_a",
+    900
+   ],
+   [
+    "idle_b",
+    520
+   ]
+  ],
+  "walk": [
+   [
+    "walk_1",
+    130
+   ],
+   [
+    "walk_2",
+    130
+   ],
+   [
+    "walk_3",
+    130
+   ],
+   [
+    "walk_4",
+    130
+   ]
+  ],
+  "hurt": [
+   [
+    "hurt",
+    170
+   ]
+  ],
+  "fall": [
+   [
+    "hurt",
+    90
+   ],
+   [
+    "fall",
+    220
+   ]
+  ],
+  "cheer": [
+   [
+    "cheer",
+    600
+   ]
+  ],
+  "charge": [
+   [
+    "gallop_1",
+    80
+   ],
+   [
+    "gallop_2",
+    80
+   ],
+   [
+    "gallop_3",
+    80
+   ],
+   [
+    "gallop_4",
+    80
+   ]
+  ],
+  "attack": [
+   [
+    "windup",
+    150
+   ],
+   [
+    "strike",
+    80,
+    "hit"
+   ],
+   [
+    "strike",
+    140
+   ],
+   [
+    "idle_a",
+    120
+   ]
+  ]
+ }
+}

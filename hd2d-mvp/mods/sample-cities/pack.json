@@ -1,0 +1,8 @@
+{
+  "id": "sample-cities",
+  "name": "加城样例",
+  "version": "1.0.0",
+  "author": "三国 HD-2D",
+  "game": 1,
+  "description": "在原版地图上加会稽、豫章两座郡城和三条路，作为写数据包的范本。"
+}

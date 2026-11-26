@@ -1,0 +1,84 @@
+{
+ "forest": {
+  "size": [
+   638,
+   360
+  ],
+  "unit": 75,
+  "seam": "tile"
+ },
+ "forest-snow": {
+  "size": [
+   636,
+   360
+  ],
+  "unit": 75,
+  "seam": "tile"
+ },
+ "mount": {
+  "size": [
+   783,
+   480
+  ],
+  "unit": 75,
+  "seam": "tile"
+ },
+ "mount-snow": {
+  "size": [
+   779,
+   480
+  ],
+  "unit": 75,
+  "seam": "tile"
+ },
+ "plain": {
+  "size": [
+   641,
+   270
+  ],
+  "unit": 75,
+  "seam": "mirror"
+ },
+ "plain-snow": {
+  "size": [
+   637,
+   270
+  ],
+  "unit": 75,
+  "seam": "mirror"
+ },
+ "river": {
+  "size": [
+   651,
+   240
+  ],
+  "unit": 75,
+  "seam": "tile"
+ },
+ "river-snow": {
+  "size": [
+   640,
+   240
+  ],
+  "unit": 75,
+  "seam": "tile"
+ },
+ "sand": {
+  "size": [
+   595,
+   240
+  ],
+  "unit": 75,
+  "seam": "tile",
+  "filler": 0.46
+ },
+ "sand-snow": {
+  "size": [
+   594,
+   240
+  ],
+  "unit": 75,
+  "seam": "tile",
+  "filler": 0.46
+ }
+}

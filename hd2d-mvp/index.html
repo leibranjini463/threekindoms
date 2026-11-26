@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>三国 HD-2D</title>
+<!-- three.js and the two web fonts are local: vendor/ is served from desktop/node_modules by tools/serve.py and
+     copied into the desktop app by desktop/build-app.mjs; the game loads nothing from the network. -->
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/build/three.module.js",
+  "three/addons/": "./vendor/three/examples/jsm/"
+} }
+</script>
+<link rel="stylesheet" href="src/ui.css?v=26">
+</head>
+<body data-screen="title">
+<div id="stage"></div>
+<div id="ui"></div>
+<div id="ui-top"></div>
+<div id="cine" hidden></div>
+<div id="tip" class="panel" hidden></div>
+<div id="fade"></div>
+<script type="module" src="src/app.js"></script>
+</body>
+</html>

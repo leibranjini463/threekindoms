@@ -1,0 +1,29 @@
+{
+ "kind": "cavalry",
+ "frames": [
+  "quarter_front_1",
+  "quarter_front_2",
+  "quarter_front_3",
+  "quarter_front_4",
+  "quarter_back_1",
+  "quarter_back_2",
+  "quarter_back_3",
+  "quarter_back_4",
+  "quarter_flee_1",
+  "quarter_flee_2",
+  "quarter_flee_3",
+  "quarter_flee_4",
+  "loose_quarter_1",
+  "loose_quarter_2",
+  "loose_front_1",
+  "loose_front_2"
+ ],
+ "cell": [
+  132,
+  115
+ ],
+ "anchor": 63,
+ "figH": 112,
+ "rest": 0,
+ "clips": {}
+}

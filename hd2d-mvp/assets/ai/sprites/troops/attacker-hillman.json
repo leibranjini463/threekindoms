@@ -1,0 +1,129 @@
+{
+ "kind": "soldier",
+ "look": "hillman",
+ "frames": [
+  "idle_a",
+  "idle_b",
+  "walk_1",
+  "walk_2",
+  "walk_3",
+  "walk_4",
+  "run",
+  "windup",
+  "strike",
+  "follow",
+  "guard",
+  "hurt",
+  "stagger",
+  "fall",
+  "dead",
+  "cheer"
+ ],
+ "cell": [
+  83,
+  61
+ ],
+ "anchor": 39,
+ "figH": 47,
+ "ref": 69,
+ "rest": 3,
+ "clips": {
+  "idle": [
+   [
+    "idle_a",
+    900
+   ],
+   [
+    "idle_b",
+    520
+   ]
+  ],
+  "walk": [
+   [
+    "walk_1",
+    130
+   ],
+   [
+    "walk_2",
+    130
+   ],
+   [
+    "walk_3",
+    130
+   ],
+   [
+    "walk_4",
+    130
+   ]
+  ],
+  "hurt": [
+   [
+    "hurt",
+    170
+   ],
+   [
+    "stagger",
+    170
+   ]
+  ],
+  "fall": [
+   [
+    "hurt",
+    90
+   ],
+   [
+    "fall",
+    220
+   ]
+  ],
+  "cheer": [
+   [
+    "cheer",
+    600
+   ]
+  ],
+  "charge": [
+   [
+    "walk_1",
+    90
+   ],
+   [
+    "run",
+    90
+   ],
+   [
+    "walk_3",
+    90
+   ],
+   [
+    "run",
+    90
+   ]
+  ],
+  "attack": [
+   [
+    "windup",
+    150
+   ],
+   [
+    "strike",
+    80,
+    "hit"
+   ],
+   [
+    "strike",
+    130
+   ],
+   [
+    "follow",
+    150
+   ]
+  ],
+  "guard": [
+   [
+    "guard",
+    300
+   ]
+  ]
+ }
+}

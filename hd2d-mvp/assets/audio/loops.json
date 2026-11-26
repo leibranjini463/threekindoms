@@ -1,0 +1,149 @@
+{
+ "assets/audio/bgm-battle.mp3": {
+  "start": 25.10865,
+  "end": 65.91772,
+  "xfade": 0.08
+ },
+ "assets/audio/bgm-duel.mp3": {
+  "start": 0.0,
+  "end": 74.8,
+  "xfade": 1.2,
+  "head": true
+ },
+ "assets/audio/bgm-ending.mp3": {
+  "start": 0.0,
+  "end": 66.4,
+  "xfade": 1.2,
+  "head": true
+ },
+ "assets/audio/bgm-gameover.mp3": {
+  "start": 0.0,
+  "end": 48.4,
+  "xfade": 1.2,
+  "head": true
+ },
+ "assets/audio/bgm-result.mp3": {
+  "start": 0.0,
+  "end": 49.5,
+  "xfade": 1.2,
+  "head": true
+ },
+ "assets/audio/bgm-skirmish.mp3": {
+  "start": 0.0,
+  "end": 48.8,
+  "xfade": 1.2,
+  "head": true
+ },
+ "assets/audio/bgm-strategy.chip.mp3": {
+  "start": 11.67591,
+  "end": 58.82402,
+  "xfade": 0.08
+ },
+ "assets/audio/bgm-strategy.hd2-high.mp3": {
+  "start": 11.68752,
+  "end": 58.84724,
+  "xfade": 0.08
+ },
+ "assets/audio/bgm-strategy.mp3": {
+  "start": 37.68226,
+  "end": 97.68262,
+  "xfade": 0.08
+ },
+ "assets/audio/bgm-title.mp3": {
+  "start": 0.0,
+  "end": 75.0,
+  "xfade": 1.2,
+  "head": true
+ },
+ "assets/audio/original/bgm-battle.mp3": {
+  "start": 12.88334,
+  "end": 89.56724,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-duel.mp3": {
+  "start": 16.47083,
+  "end": 90.75146,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-ending.mp3": {
+  "start": 20.66203,
+  "end": 110.12851,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-gameover.mp3": {
+  "start": 38.59944,
+  "end": 89.76461,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-result.mp3": {
+  "start": 19.07146,
+  "end": 108.53795,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-select.mp3": {
+  "start": 21.79981,
+  "end": 111.25468,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-skirmish.mp3": {
+  "start": 9.27264,
+  "end": 111.52171,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-strategy.mp3": {
+  "start": 15.07763,
+  "end": 91.76153,
+  "xfade": 0.08
+ },
+ "assets/audio/original/bgm-title.mp3": {
+  "start": 0.0,
+  "end": 118.2,
+  "xfade": 1.2,
+  "head": true
+ },
+ "assets/audio/remix/bgm-battle.mp3": {
+  "start": 51.4633,
+  "end": 127.4506,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-duel.mp3": {
+  "start": 9.65577,
+  "end": 83.12371,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-ending.mp3": {
+  "start": 29.07926,
+  "end": 117.51246,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-gameover.mp3": {
+  "start": 17.16743,
+  "end": 76.66856,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-result.mp3": {
+  "start": 26.2116,
+  "end": 101.17722,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-select.mp3": {
+  "start": 41.96634,
+  "end": 163.00035,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-skirmish.mp3": {
+  "start": 19.98865,
+  "end": 70.88679,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-strategy.mp3": {
+  "start": 42.57006,
+  "end": 93.18956,
+  "xfade": 0.08
+ },
+ "assets/audio/remix/bgm-title.mp3": {
+  "start": 13.26647,
+  "end": 150.09006,
+  "xfade": 0.08
+ }
+}

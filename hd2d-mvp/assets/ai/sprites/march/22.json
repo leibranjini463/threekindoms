@@ -1,0 +1,25 @@
+{
+ "cell": [
+  153,
+  114
+ ],
+ "anchor": 72,
+ "frames": [
+  "side_stand",
+  "side_walk_1",
+  "side_walk_2",
+  "side_walk_3",
+  "side_walk_4",
+  "front_stand",
+  "front_walk_1",
+  "front_walk_2",
+  "front_walk_3",
+  "front_walk_4",
+  "back_stand",
+  "back_walk_1",
+  "back_walk_2",
+  "back_walk_3",
+  "back_walk_4"
+ ],
+ "standHeight": 112
+}

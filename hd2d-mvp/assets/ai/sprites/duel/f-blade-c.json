@@ -1,0 +1,76 @@
+{
+ "frames": [
+  "idle_ref",
+  "allin_charge_1",
+  "allin_charge_2",
+  "allin_leap",
+  "allin_smear",
+  "allin_impact",
+  "allin_land",
+  "hurt_crush",
+  "slump",
+  "man_fly",
+  "man_hit",
+  "man_struggle",
+  "horse_rear",
+  "weapon",
+  "man_kneel",
+  "triumph"
+ ],
+ "cell": [
+  205,
+  126
+ ],
+ "anchor": 110,
+ "figH": 112,
+ "base": {
+  "idle_ref": 0,
+  "allin_charge_1": 0,
+  "allin_charge_2": 0,
+  "allin_leap": 0,
+  "allin_smear": 0,
+  "allin_impact": 0,
+  "allin_land": 0,
+  "hurt_crush": 0,
+  "slump": 0,
+  "man_fly": 0,
+  "man_hit": 1,
+  "man_struggle": 2,
+  "horse_rear": 0,
+  "weapon": 0,
+  "man_kneel": 0,
+  "triumph": 0
+ },
+ "tips": {
+  "allin_charge_1": [
+   73,
+   47
+  ],
+  "allin_charge_2": [
+   63,
+   51
+  ],
+  "allin_leap": [
+   58,
+   34
+  ],
+  "allin_smear": [
+   92,
+   83
+  ],
+  "allin_impact": [
+   92,
+   81
+  ],
+  "allin_land": [
+   60,
+   48
+  ],
+  "triumph": [
+   60,
+   63
+  ]
+ },
+ "take": "c",
+ "picks": {}
+}

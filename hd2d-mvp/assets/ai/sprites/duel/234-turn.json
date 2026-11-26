@@ -1,0 +1,164 @@
+{
+ "kind": "cavalry",
+ "frames": [
+  "front_idle",
+  "front_walk_1",
+  "front_walk_2",
+  "front_walk_3",
+  "front_walk_4",
+  "front_windup",
+  "front_strike",
+  "front_hurt",
+  "back_idle",
+  "back_walk_1",
+  "back_walk_2",
+  "back_walk_3",
+  "back_walk_4",
+  "back_windup",
+  "back_strike",
+  "back_hurt"
+ ],
+ "cell": [
+  166,
+  123
+ ],
+ "anchor": 73,
+ "figH": 112,
+ "rest": 0,
+ "clips": {
+  "front:idle": [
+   [
+    "front_idle",
+    1400
+   ]
+  ],
+  "front:walk": [
+   [
+    "front_walk_1",
+    130
+   ],
+   [
+    "front_walk_2",
+    130
+   ],
+   [
+    "front_walk_3",
+    130
+   ],
+   [
+    "front_walk_4",
+    130
+   ]
+  ],
+  "front:charge": [
+   [
+    "front_walk_1",
+    80
+   ],
+   [
+    "front_walk_2",
+    80
+   ],
+   [
+    "front_walk_3",
+    80
+   ],
+   [
+    "front_walk_4",
+    80
+   ]
+  ],
+  "front:hurt": [
+   [
+    "front_hurt",
+    300
+   ]
+  ],
+  "front:attack": [
+   [
+    "front_windup",
+    150
+   ],
+   [
+    "front_strike",
+    80,
+    "hit"
+   ],
+   [
+    "front_strike",
+    140
+   ],
+   [
+    "front_idle",
+    100
+   ]
+  ],
+  "back:idle": [
+   [
+    "back_idle",
+    1400
+   ]
+  ],
+  "back:walk": [
+   [
+    "back_walk_1",
+    130
+   ],
+   [
+    "back_walk_2",
+    130
+   ],
+   [
+    "back_walk_3",
+    130
+   ],
+   [
+    "back_walk_4",
+    130
+   ]
+  ],
+  "back:charge": [
+   [
+    "back_walk_1",
+    80
+   ],
+   [
+    "back_walk_2",
+    80
+   ],
+   [
+    "back_walk_3",
+    80
+   ],
+   [
+    "back_walk_4",
+    80
+   ]
+  ],
+  "back:hurt": [
+   [
+    "back_hurt",
+    300
+   ]
+  ],
+  "back:attack": [
+   [
+    "back_windup",
+    150
+   ],
+   [
+    "back_strike",
+    80,
+    "hit"
+   ],
+   [
+    "back_strike",
+    140
+   ],
+   [
+    "back_idle",
+    100
+   ]
+  ]
+ }
+}

@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>记录编辑</title>
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
+<link rel="stylesheet" href="src/ui.css">
+<style>
+  /* Save editor for the browser build: reads and writes the game's own record slots, so it must be opened on the
+     same origin as the game (/hd2d-mvp/save-editor.html). Opened from the title's 系统 → 记录编辑; 返回游戏 goes back. Editable fields and their
+     ranges come from src/core/saveedit.js; the look is the game's own lacquer panels, busts and gear icons. */
+  html, body { overflow: auto; height: auto; min-height: 100%; }
+  body { background: #0c0907; }
+  body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 0%, #0000 0%, #0c0907d0 55%, #0c0907 85%), url(assets/ai/backdrops/autumn.webp) center top / cover no-repeat; opacity: .55; filter: saturate(.7); }
+  .ed { max-width: 1440px; margin: 0 auto; padding: 22px 24px 96px; display: grid; gap: 16px; }
+
+  /* Head */
+  .ed-head { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+  .ed-head h1 { margin: 0; font: 46px/1 var(--brush); letter-spacing: 6px; color: #fff3d6; text-shadow: 0 0 2px #000, 0 4px 0 #4a1408, 0 0 30px #f6a03c55; }
+  .ed-head p { margin: 0 0 4px; color: var(--dim); font-size: 14px; max-width: 64ch; text-wrap: pretty; }
+  .ed-head .back { margin: 0 0 4px auto; }
+  .panel.ed-box { position: relative; }
+
+  /* Record slots */
+  .slots-rail { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; padding: 10px; }
+  .slotc { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 6px 8px; text-align: left;
+    background: #0005; border: 1px solid #5a442888; border-radius: 3px; color: var(--ink); transition: .12s; min-width: 0; }
+  .slotc:hover:not(:disabled) { border-color: var(--gold); background: #ffffff0a; }
+  .slotc.on { border-color: #ffd890; background: linear-gradient(#4a3218, #24180f); box-shadow: 0 0 14px #ffb34a33, inset 0 0 0 1px #00000080; }
+  .slotc:disabled { opacity: .38; cursor: default; }
+  .slotc img { grid-row: span 2; width: 38px; height: 44px; object-fit: cover; object-position: 50% 15%; border: 1px solid #5a4428; border-radius: 2px; background: #000; }
+  .slotc .no { font: 600 13px var(--serif); color: var(--gold); letter-spacing: 1px; display: flex; gap: 6px; align-items: center; min-width: 0; }
+  .slotc .no i { font-style: normal; font-size: 11px; padding: 0 4px; border-radius: 2px; color: #1a1009; background: #e8c070; letter-spacing: 0; }
+  .slotc .when { font-size: 13px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .blank { display: block; width: 40px; height: 48px; border: 1px dashed #5a442866; border-radius: 2px; }
+  .slotc .blank { grid-row: span 2; width: 38px; height: 44px; border: 1px dashed #5a442888; border-radius: 2px; }
+  /* The quick record is a separate row; eight regular records keep enough room for their date and ruler. */
+  .slotc.quick { grid-column: 1 / -1; grid-template-columns: 38px auto minmax(0, 1fr); }
+  .slotc.quick img, .slotc.quick .blank { grid-row: auto; }
+
+  /* Tabs */
+  .ed-tabs { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .ed-tabs .btn { min-width: 76px; font-size: 18px; }
+  .ed-tabs .btn.on { border-color: #ffd890; color: #fff4d8; background: linear-gradient(#5a3a1c, #2c1e12); }
+  .ed-tabs .btn small { margin-left: 6px; font-size: 12px; color: var(--dim); }
+  .ed-tabs .sp { flex: 1; }
+  .ed-tabs .meta { color: var(--dim); font-size: 14px; }
+  .ed-tabs .meta b { color: var(--ink); font-weight: 600; }
+
+  /* Master–detail */
+  .md { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .list { display: flex; flex-direction: column; height: min(72vh, 760px); min-height: 420px; }
+  .list-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 12px 8px; border-bottom: 1px solid #8a6a3440; }
+  .list-bar input, .list-bar select, .sel { font: 15px var(--serif); color: var(--ink); background: #0007; border: 1px solid #5a4428; border-radius: 3px; padding: 4px 7px; }
+  .list-bar input { flex: 1 1 8em; min-width: 0; } .list-bar input:focus, .list-bar select:focus { outline: none; border-color: var(--gold); }
+  .se-chips { display: flex; gap: 4px; flex-wrap: wrap; width: 100%; }
+  .se-chip { padding: 1px 9px; font-size: 14px; border: 1px solid #5a442888; border-radius: 2px; background: #0004; color: var(--dim); }
+  .se-chip:hover { color: var(--ink); border-color: var(--gold2); }
+  .se-chip.on { color: #2a1606; background: linear-gradient(#ffe6a0, #e0b860); border-color: #ffe6a0; }
+  .se-chip small { margin-left: 4px; font-size: 11px; opacity: .8; }
+  .rows { overflow-y: auto; flex: 1; padding: 6px 6px 10px; scrollbar-color: #5a4428 transparent; }
+  .row { width: 100%; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 9px; align-items: center; padding: 4px 6px;
+    background: none; border: 1px solid transparent; border-radius: 3px; text-align: left; }
+  .row:hover { background: #ffffff0c; }
+  .row.on { background: #ffd8901a; border-color: #8a6a34; }
+  .row img { width: 40px; height: 48px; object-fit: cover; object-position: 50% 12%; border: 1px solid #5a4428; border-radius: 2px; background: #000; }
+  .row.dead img { filter: grayscale(1) brightness(.6); } .row.yet img { filter: brightness(.75) saturate(.5); }
+  .row .nm { font-weight: 600; display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .row .nm span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .nm em { font-style: normal; font-size: 12px; color: var(--gold); }
+  .row .sub { font-size: 13px; color: var(--dim); display: flex; gap: 8px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .row .sub b { font-weight: 500; color: #d8ccb4; }
+  .row .tr { font-size: 13px; color: var(--dim); text-align: right; white-space: nowrap; display: grid; justify-items: end; gap: 2px; }
+  .row .edited { width: 7px; height: 7px; border-radius: 50%; background: #ffd890; box-shadow: 0 0 6px #ffd890; }
+  .dot { display: inline-block; flex: none; width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 2px #0008; }
+  .fac { display: inline-flex; align-items: center; gap: 6px; }
+  .se-none { padding: 30px 10px; text-align: center; color: var(--dim); }
+
+  /* Detail */
+  .detail { padding: 18px 20px 20px; display: grid; gap: 16px; min-height: 420px; }
+  .se-who { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: end; padding-bottom: 14px; border-bottom: 1px solid #8a6a3440; }
+  .se-who .fig { width: 132px; height: 160px; object-fit: cover; object-position: 50% 8%; border: 1px solid var(--gold2); border-radius: 3px; background: #000;
+    box-shadow: inset 0 0 0 2px var(--lacquer), 0 6px 18px #000a; }
+  .se-who .fig.px { image-rendering: pixelated; }
+  .se-who h2 { margin: 0; font: 40px/1.1 var(--brush); letter-spacing: 4px; color: #fff3d6; text-shadow: 0 3px 0 #4a1408; }
+  .se-who h2 small { font: 14px var(--serif); letter-spacing: 1px; color: var(--dim); margin-left: 10px; }
+  .se-who .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .se-tag { font-size: 13px; padding: 1px 8px; border: 1px solid #5a4428; border-radius: 2px; color: #d8ccb4; background: #0005; display: inline-flex; align-items: center; gap: 6px; }
+  .se-tag.gold { color: #ffe2a0; border-color: #8a6a34; }
+  .se-who .se-acts { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+  .se-who .se-acts .btn { font-size: 15px; padding: 4px 12px; }
+
+  .sec { display: grid; gap: 8px; }
+  .sec h4 { margin: 0; font: 600 14px var(--serif); letter-spacing: 3px; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+  .sec h4::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, #8a6a3466, transparent); }
+  .stats-ed { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px; }
+  .stat { display: grid; grid-template-columns: 3.4em minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 3px 0; }
+  .stat > label { color: var(--dim); font-size: 15px; letter-spacing: 1px; }
+  .stat.changed > label { color: #ffe2a0; }
+  .se-meter { position: relative; height: 22px; }
+  .se-meter input[type=range] { position: absolute; inset: 0; width: 100%; margin: 0; appearance: none; -webkit-appearance: none; background: none; cursor: pointer; }
+  .se-meter input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 1px; background: linear-gradient(90deg, #c88a3a, #ffd890) 0 / var(--p, 0%) 100% no-repeat, #000a; box-shadow: inset 0 0 0 1px #5a4428; }
+  .se-meter input[type=range]::-moz-range-track { height: 8px; border-radius: 1px; background: #000a; box-shadow: inset 0 0 0 1px #5a4428; }
+  .se-meter input[type=range]::-moz-range-progress { height: 8px; background: linear-gradient(90deg, #c88a3a, #ffd890); }
+  .se-meter input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; margin-top: -5px; border-radius: 2px; background: linear-gradient(#fff0c8, #d8a050); border: 1px solid #3a2208; box-shadow: 0 1px 3px #000c; }
+  .se-meter input[type=range]::-moz-range-thumb { width: 12px; height: 18px; border-radius: 2px; background: linear-gradient(#fff0c8, #d8a050); border: 1px solid #3a2208; }
+  .se-meter input[type=range]:focus-visible { outline: 2px solid #ffd890; outline-offset: 2px; }
+  .se-meter .was { position: absolute; top: 2px; width: 2px; height: 18px; margin-left: -1px; background: #fff8; pointer-events: none; border-radius: 1px; }
+  .se-meter .was[hidden] { display: none; }
+  .val { display: flex; align-items: center; gap: 6px; }
+  .val input { width: 4.4em; font: 600 16px var(--serif); text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); background: #0008; border: 1px solid #5a4428; border-radius: 3px; padding: 2px 6px; }
+  .val input:focus { outline: none; border-color: var(--gold); }
+  .stat.changed .val input { border-color: #ffd890; background: #3a2208c0; color: #fff4d8; }
+  .se-delta { min-width: 3.6em; font-size: 13px; font-variant-numeric: tabular-nums; color: var(--dim); }
+  .se-delta.up { color: var(--good); } .se-delta.down { color: var(--bad); }
+  .stat.locked { opacity: .45; pointer-events: none; }
+
+  .se-gear { display: grid; gap: 6px; }
+  .se-gear-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .se-gear-row .k { width: 3.4em; flex: none; color: var(--dim); font-size: 15px; }
+  .eq { position: relative; width: 42px; height: 42px; padding: 3px; display: grid; place-items: center; border: 1px solid #5a442888; border-radius: 3px; background: #0006; transition: .1s; }
+  .eq img { width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 1px 1px #000a); }
+  .eq:hover { border-color: var(--gold); background: #ffffff10; }
+  .eq.on { border-color: #ffd890; background: radial-gradient(#ffd89040, #3a2208c0); box-shadow: 0 0 10px #ffb34a55; }
+  .eq.was::after { content: ''; position: absolute; top: 2px; right: 2px; width: 5px; height: 5px; border-radius: 50%; background: #fff9; }
+  .se-gear-now { font-size: 14px; color: var(--dim); margin-left: 3.4em; padding-left: 4px; min-height: 1.5em; }
+  .se-gear-now b { color: #fff3d6; font-weight: 600; } .se-gear-now .changed { color: #ffe2a0; }
+
+  /* City detail head */
+  .se-who.city { grid-template-columns: minmax(0, 1fr) auto; }
+  .gov { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .gov img { width: 30px; height: 36px; object-fit: cover; object-position: 50% 12%; border: 1px solid #5a4428; border-radius: 2px; background: #000; }
+
+  /* Alliance matrix */
+  .al { padding: 18px 20px 20px; display: grid; gap: 14px; }
+  .al p { margin: 0; color: var(--dim); font-size: 14px; }
+  .al-wrap { overflow-x: auto; }
+  .al table { border-collapse: separate; border-spacing: 4px; }
+  .al th { font-weight: 600; font-size: 14px; color: var(--ink); padding: 2px; }
+  .al thead th { vertical-align: bottom; }
+  .al .lead { display: grid; justify-items: center; gap: 4px; min-width: 76px; }
+  .al .lead img { width: 44px; height: 52px; object-fit: cover; object-position: 50% 12%; border: 1px solid #5a4428; border-radius: 2px; background: #000; }
+  .al tbody th .lead { grid-template-columns: 44px auto; justify-items: start; align-items: center; gap: 8px; min-width: 0; text-align: left; }
+  .al td { width: 84px; height: 54px; text-align: center; border: 1px solid #5a442866; border-radius: 3px; background: #0005; }
+  .al td.self { background: repeating-linear-gradient(45deg, #ffffff06 0 6px, #0000 6px 12px); border-color: #5a442833; }
+  .al td:not(.on) output { color: #8a806c; }
+  .al td.on { background: linear-gradient(#3e5a2a80, #1c2a1480); border-color: #8fd46a88; }
+  .al td.changed { box-shadow: 0 0 0 1px #ffd890, 0 0 10px #ffb34a44; }
+  .al td.hot { outline: 1px solid #ffd890aa; }
+  .step { display: inline-flex; align-items: center; gap: 2px; }
+  .step button { width: 22px; height: 24px; padding: 0; border: 1px solid #5a4428; border-radius: 2px; background: #0007; color: var(--dim); font-size: 15px; line-height: 1; }
+  .step button:hover:not(:disabled) { color: #fff4d8; border-color: var(--gold); }
+  .step button:disabled { opacity: .3; cursor: default; }
+  .step output { min-width: 2.2em; font: 600 17px var(--serif); font-variant-numeric: tabular-nums; }
+  .al td small { display: block; font-size: 11px; color: var(--dim); }
+
+  /* 原版漏洞 */
+  .bug { padding: 20px 22px 22px; display: grid; gap: 18px; }
+  .bug-hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: start; }
+  .bug-hero .fig { width: 132px; height: 160px; object-fit: cover; object-position: 50% 8%; border: 1px solid var(--gold2); border-radius: 3px; background: #000; box-shadow: inset 0 0 0 2px var(--lacquer), 0 6px 18px #000a; }
+  .bug-hero .fig.px { image-rendering: pixelated; }
+  .bug-hero h2 { margin: 0 0 10px; font: 40px/1.1 var(--brush); letter-spacing: 4px; color: #fff3d6; text-shadow: 0 3px 0 #4a1408; }
+  .bug-hero h2 small { font: 14px var(--serif); letter-spacing: 1px; color: var(--dim); margin-left: 12px; }
+  .bug-hero p { margin: 12px 0 0; color: #d8ccb4; max-width: 62ch; text-wrap: pretty; }
+  .se-switch { display: inline-flex; align-items: center; gap: 10px; padding: 4px 14px 4px 6px; border: 1px solid var(--gold2); border-radius: 18px; background: #0007; font-size: 15px; color: var(--dim); }
+  .se-switch i { position: relative; width: 40px; height: 22px; border-radius: 11px; background: #2a1e14; box-shadow: inset 0 0 0 1px #5a4428; transition: background .15s; }
+  .se-switch i::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(#d8ccb4, #8a806c); transition: transform .15s, background .15s; }
+  .se-switch.on { color: #ffe2a0; border-color: #ffd890; box-shadow: 0 0 12px #ffb34a44; }
+  .se-switch.on i { background: linear-gradient(90deg, #8a2c1e, #c8402f); }
+  .se-switch.on i::after { transform: translateX(18px); background: linear-gradient(#fff0c8, #e0b860); }
+  .bug-steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: step; }
+  .bug-steps li { counter-increment: step; position: relative; padding: 12px 14px 14px 44px; border: 1px solid #5a442888; border-radius: 3px; background: #0005; color: #d8ccb4; font-size: 14px; display: grid; gap: 6px; align-content: start; text-wrap: pretty; }
+  .bug-steps li::before { content: counter(step); position: absolute; left: 12px; top: 11px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 600 13px var(--serif); color: #2a1606; background: linear-gradient(#ffe6a0, #e0b860); }
+  .bug-steps li b { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
+  .bug-steps li .btn { justify-self: start; font-size: 14px; padding: 3px 10px; margin-top: 4px; }
+  .bug .hint { margin: 0; color: var(--dim); font-size: 14px; }
+  .se-owners { display: flex; flex-wrap: wrap; gap: 8px; }
+  .se-owner { display: grid; grid-template-columns: 34px auto; grid-template-rows: auto auto; column-gap: 8px; align-items: center; padding: 5px 12px 5px 6px; border: 1px solid #5a442888; border-radius: 3px; background: #0005; text-align: left; }
+  .se-owner img { grid-row: span 2; width: 34px; height: 40px; object-fit: cover; object-position: 50% 12%; border: 1px solid #5a4428; border-radius: 2px; background: #000; }
+  .se-owner small { font-size: 11px; color: var(--gold); }
+  .se-owner:hover { border-color: var(--gold); }
+  .se-owner.on { border-color: #ffd890; background: linear-gradient(#4a3218, #24180f); box-shadow: 0 0 12px #ffb34a33; }
+  .copies { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .copy { display: grid; justify-items: center; gap: 3px; padding: 6px 4px; border: 1px solid #5a442888; border-radius: 3px; background: #0005; font-size: 13px; color: #d8ccb4; }
+  .copy img { width: 40px; height: 48px; object-fit: cover; object-position: 50% 12%; border: 1px solid #5a4428; border-radius: 2px; background: #000; }
+  .copy small { color: var(--dim); font-size: 12px; }
+  .copy:hover { border-color: var(--gold); }
+  @media (max-width: 900px) { .bug-steps { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 560px) { .bug-hero { grid-template-columns: minmax(0, 1fr); } .bug-hero .fig { width: 96px; height: 116px; } }
+
+  /* Action bar */
+  .dock-ed { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 9; display: flex; gap: 8px; align-items: center; padding: 8px 10px 8px 16px; width: max-content; max-width: calc(100vw - 32px); flex-wrap: wrap; justify-content: center; }
+  .dock-ed .count { font-size: 15px; color: var(--dim); margin-right: 6px; white-space: nowrap; }
+  .dock-ed .count b { color: #ffe2a0; font-size: 18px; margin: 0 2px; }
+  .dock-ed .sep { width: 1px; height: 24px; background: #8a6a3466; margin: 0 4px; }
+
+  /* Number keypad (short screens): the value and its range beside a 3×4 pad, so it fits 320 px */
+  .kp-wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: stretch; }
+  .kp-side { display: grid; align-content: start; gap: 6px; min-width: 9em; }
+  .kp-side .foot { margin-top: auto; padding-top: 12px; }
+  .kp-val { font: 600 40px/1.1 var(--serif); color: #fff4d8; font-variant-numeric: tabular-nums; padding: 4px 10px; border: 1px solid var(--gold2); border-radius: 3px; background: #0008; text-align: right; }
+  .kp-side small { color: var(--dim); font-size: 13px; }
+  .kp { display: grid; grid-template-columns: repeat(3, 52px); gap: 6px; }
+  .kp .btn { height: 44px; padding: 0; font-size: 20px; }
+  .kp .btn:last-child { font-size: 15px; }
+
+  /* Confirmation list */
+  .diff { max-height: 46vh; overflow: auto; margin: 6px 0 0; padding: 0; list-style: none; border-top: 1px solid #8a6a3440; font-variant-numeric: tabular-nums; }
+  .diff li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; padding: 4px 2px; border-bottom: 1px solid #ffffff0a; font-size: 15px; }
+  .diff li span:last-child { color: var(--dim); } .diff li b { color: #ffe2a0; font-weight: 600; }
+  .empty-state { padding: 60px 20px; text-align: center; display: grid; gap: 10px; justify-items: center; }
+  .empty-state h3 { margin: 0; font: 30px var(--brush); letter-spacing: 3px; color: #fff3d6; }
+  .empty-state p { margin: 0; color: var(--dim); max-width: 40ch; }
+
+  @media (max-width: 1100px) { .slots-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); } .stats-ed { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 760px) {
+    .ed { padding: 14px 16px 150px; }
+    .dock-ed .sep { display: none; }
+    .ed-head h1 { font-size: 36px; }
+    .slots-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .md { grid-template-columns: minmax(0, 1fr); }
+    .list { height: 46vh; min-height: 300px; }
+    .se-who { grid-template-columns: auto minmax(0, 1fr); } .se-who .se-acts { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
+    .se-who .fig { width: 92px; height: 112px; } .se-who h2 { font-size: 32px; }
+  }
+  /* Phone-only controls: the 记录 button beside the tabs, − and + beside each number, the back-to-list button and the
+     rail's 返回游戏. The desktop layout has slots, a keyboard and room for both panes. */
+  .slotpick, .se-step, .se-back, #back-rail, #sep-rail { display: none; }
+
+  /* Short landscape screens (phones held sideways: devblog #356 D66, and the Android package) get the page as one
+     screen, like a game menu, instead of a long page with a list scrolling inside it:
+     - the actions are a rail on the right with a gutter of its own (a bottom bar sat over the sliders on a 320–390 px
+       tall page), with 返回游戏 in it; the record slots fold into the 记录 button that leads the tabs;
+     - the list and the detail each scroll in their own box: side by side from 780 px, else one at a time (a row opens
+       the detail, ‹ 列表 or the back key returns);
+     - controls are 32 px or more for a finger, and every number has − and + (held, they repeat and speed up), since the
+       keyboard covers half the screen in the full-screen package.
+     The rail takes ~125 px; change --rail and the rail's buttons together (tests/editorentry.test.mjs). */
+  @media (max-height: 520px) and (min-aspect-ratio: 4/3) {
+    :root { --rail: 104px; }
+    html, body { height: 100%; overflow: hidden; }
+    .ed { box-sizing: border-box; height: var(--vh, 100vh); grid-template-rows: auto minmax(0, 1fr); gap: 8px;
+      padding: max(8px, env(safe-area-inset-top, 0px)) calc(var(--rail) + 20px + env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px)); }
+    .ed-head, .ed > .slots-rail { display: none; } /* the slot dialogs (记录, 导入) use .slots-rail too */
+    .dock-ed { left: auto; right: max(8px, env(safe-area-inset-right, 0px)); bottom: auto; top: 50%; transform: translateY(-50%);
+      width: var(--rail); max-width: none; max-height: calc(100% - 16px); overflow-y: auto; box-sizing: border-box;
+      flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 6px; padding: 8px; }
+    .dock-ed .count { margin: 0 0 2px; text-align: center; font-size: 13px; }
+    .dock-ed .count b { font-size: 16px; }
+    .dock-ed .btn { min-height: 34px; padding: 4px; font-size: 15px; white-space: nowrap; }
+    .dock-ed .sep { display: block; width: auto; height: 1px; margin: 2px 4px; }
+    #back-rail, #sep-rail { display: block; }
+
+    .ed-tabs { flex-wrap: nowrap; gap: 5px; overflow-x: auto; scrollbar-width: none; }
+    .ed-tabs .btn { flex: none; min-width: 0; min-height: 38px; padding: 4px 12px; font-size: 16px; white-space: nowrap; }
+    .ed-tabs .meta, .ed-tabs .sp { display: none; }
+    .ed-tabs .slotpick { display: inline-flex; align-items: center; gap: 6px; border-color: var(--gold2); }
+    .ed-tabs .slotpick::after { content: ''; width: 0; height: 0; border: 5px solid transparent; border-top-color: var(--gold); margin: 5px 0 0 2px; }
+    .ed-tabs .slotpick small { margin: 0; }
+
+    #body { min-height: 0; }
+    #body > * { height: 100%; box-sizing: border-box; }
+    .md { grid-template-columns: minmax(0, 1fr); gap: 8px; align-items: stretch; }
+    .list { height: 100%; min-height: 0; }
+    .list-bar { padding: 8px 8px 6px; }
+    .list-bar input, .list-bar select { min-height: 34px; }
+    .se-chip { min-height: 32px; padding: 3px 11px; }
+    .detail { min-height: 0; overflow-y: auto; align-content: start; padding: 12px 14px 16px; gap: 12px; overscroll-behavior: contain; }
+    .rows { overscroll-behavior: contain; }
+    /* the head stays short so the sliders start on the first screen: the buttons sit under the name and tags */
+    .se-who { grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; align-items: start; padding-bottom: 10px; }
+    .se-who.city { grid-template-columns: minmax(0, 1fr); }
+    .se-who .se-acts { grid-column: 2; flex-direction: row; flex-wrap: wrap; }
+    .se-who.city .se-acts { grid-column: 1; }
+    .se-who .se-acts .btn { min-height: 34px; padding: 3px 10px; }
+    .se-who .fig { grid-row: span 2; width: 76px; height: 92px; } .se-who h2 { font-size: 28px; }
+    .se-who .tags { margin-top: 4px; } .se-tag { font-size: 12px; }
+
+    .stat { grid-template-columns: 3em minmax(0, 1fr) auto; gap: 8px; padding: 1px 0; }
+    .se-delta { display: none; }
+    .se-meter { height: 34px; }
+    .se-meter input[type=range]::-webkit-slider-thumb { width: 20px; height: 30px; margin-top: -11px; }
+    .se-meter .was { top: 8px; }
+    .val { gap: 4px; }
+    .val input { width: 3.6em; height: 32px; box-sizing: border-box; padding: 2px 4px; cursor: pointer; }
+    .se-step { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #5a4428; border-radius: 3px;
+      background: #0007; color: var(--ink); font-size: 18px; line-height: 1; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .se-step:active:not(:disabled) { border-color: var(--gold); background: #3a2208c0; }
+    .se-step:disabled { opacity: .3; }
+
+    .se-gear-row { gap: 3px; flex-wrap: nowrap; } .se-gear-row .k { width: 3em; font-size: 14px; } /* eight to a row at 568 px */
+    .eq { width: 38px; height: 38px; padding: 2px; } .eq img { width: 30px; height: 30px; }
+    .se-gear-now { margin-left: 3em; }
+    .al { grid-template-rows: auto minmax(0, 1fr); padding: 12px 14px; gap: 10px; }
+    .al-wrap { overflow: auto; overscroll-behavior: contain; }
+    .al td { width: 108px; height: 62px; }
+    .al .lead img { width: 34px; height: 40px; } .al tbody th .lead { grid-template-columns: 34px auto; } .al .lead { min-width: 64px; }
+    .step button { width: 34px; height: 34px; font-size: 18px; }
+    .bug { overflow-y: auto; padding: 14px 16px; gap: 14px; overscroll-behavior: contain; }
+    .bug-hero .fig { width: 80px; height: 98px; } .bug-hero h2 { font-size: 30px; }
+    .bug-steps li .btn { min-height: 34px; }
+  }
+  @media (max-height: 520px) and (min-aspect-ratio: 4/3) and (min-width: 780px) {
+    .md { grid-template-columns: minmax(230px, 38%) minmax(0, 1fr); }
+  }
+  @media (max-height: 520px) and (min-aspect-ratio: 4/3) and (max-width: 779.98px) {
+    .md:not(.pane-detail) > .detail, .md.pane-detail > .list { display: none; }
+    .se-who .se-acts .se-back { display: inline-block; }
+  }
+  @media (max-height: 520px) and (min-aspect-ratio: 4/3) and (max-width: 640px) { .ed-tabs .slotpick small { display: none; } }
+.ed-pad-help { display: none; }
+body[data-input=pad] .ed-pad-help { display: inline; color: var(--dim); }
+body[data-input=pad] .ed :focus, body[data-input=pad] #dock :focus { outline: 2px solid var(--gold); outline-offset: -2px; }
+body[data-input=pad] .stat:focus-within { box-shadow: inset 0 0 0 2px var(--gold); }
+@media (max-width: 800px) { body[data-input=pad] .ed-pad-help { font-size: 11px; } }
+</style>
+</head>
+<body>
+<main class="ed">
+  <header class="ed-head">
+    <h1>记录编辑</h1>
+    <p>改武将、城市与同盟。改动先在这里暂存，按「写回记录」才会存进游戏；数值按游戏规则的范围截断。写回后回到游戏，从标题画面读取该记录即可。</p>
+    <button class="btn back" id="back">返回游戏</button>
+  </header>
+  <nav class="panel ed-box slots-rail" id="slots" aria-label="记录槽"></nav>
+  <div class="ed-tabs" id="tabs"></div>
+  <section id="body"></section>
+</main>
+<div class="panel dock-ed" id="dock">
+  <small class="ed-pad-help">↑↓ 选项　←→ 调数值　<kbd class="pg" data-glyph="start"></kbd> 写回　<kbd class="pg" data-glyph="b"></kbd> 返回</small>
+  <span class="count" id="count"></span>
+  <button class="btn" id="revert">放弃改动</button>
+  <button class="btn primary" id="write">写回记录</button>
+  <span class="sep"></span>
+  <button class="btn" id="export">导出</button>
+  <button class="btn" id="import">导入…</button>
+  <span class="sep" id="sep-rail"></span>
+  <button class="btn" id="back-rail">返回游戏</button>
+  <input type="file" id="file" accept=".json,application/json" hidden>
+</div>
+<div id="ui-top"></div>
+<script type="module">
+import { toHans } from './src/lang.js'; // first: 繁體 converts this page's text as the game does (系统 → 文字)
+import { createPad, firstIn, walk, sendKey, shown } from './src/pad.js';
+import * as G from './src/core/game.js';
+import { h, modal, toast, avatar, figure, setPortraits, setFaces, setHalfbody } from './src/ui.js';
+import { OFFICER_FIELDS, officerFields, CITY_FIELDS, ALLIANCE_MAX, hpText, setOfficer, setCity, setAlliance, checkRecord, setBug, setPhantomOwner } from './src/core/saveedit.js';
+import { PHANTOM_ROADS } from './src/core/ahuinan.js';
+
+// The editor works on the data the game plays (?pack= is passed on from the game's menu); a record of another pack is refused by checkRecord.
+await G.loadWithPack();
+const D = G.data();
+const json = async (url) => { try { return await (await fetch(url, { cache: 'no-store' })).json(); } catch { return []; } };
+// The same art the game loads (app.js): generated portraits, expression busts and waist-up figures, where they exist.
+const [pIdx, fIdx, hIdx] = await Promise.all(['portraits', 'faces', 'halfbody'].map((k) => json(`assets/ai/${k}/index.json`)));
+setPortraits(Object.fromEntries(pIdx.map((id) => [id, `assets/ai/portraits/${id}.webp`])));
+const faces = {}; for (const k of fIdx) { const [id, mood] = k.split('-'); (faces[id] ||= {})[mood] = `assets/ai/faces/${k}.webp`; } setFaces(faces);
+setHalfbody(Object.fromEntries(hIdx.map((id) => [id, `assets/ai/halfbody/${id}.webp`])));
+
+const $ = (id) => document.getElementById(id);
+const SLOT_NAMES = '一二三四五六七八九十';
+const slotName = (n) => n === 'quick' ? '快捷存档' : `记录${SLOT_NAMES[n - 1]}`;
+const STATUS = { [G.SERVING]: '仕官', [G.RONIN]: '在野', [G.UNAPPEARED]: '未登场', [G.DEAD]: '已故' };
+const STATUS_ORDER = [G.SERVING, G.RONIN, G.UNAPPEARED, G.DEAD];
+const WEAPONS = D.equipment.filter((e) => e.kind === 'weapon'), ARMORS = D.equipment.filter((e) => e.kind === 'armor');
+const icon = (id) => `assets/ai/icon/equip/${id}.webp`;
+const STATS = officerFields().filter(([k]) => k !== 'weapon' && k !== 'armor'); // after loadWithPack: a pack's 100 (D172)
+const hiOf = (key) => STATS.find(([k]) => k === key)[3];
+const color = (f) => (f == null || f === G.NONE ? '#5a5a66' : G.FACTION_COLORS[f]);
+const dot = (f) => h('i', { class: 'dot', style: { background: color(f) } });
+const clone = (x) => JSON.parse(JSON.stringify(x));
+
+let slot = null, base = null, g = null, quickOpened = null, tab = 'officers', pick = { officers: null, cities: null };
+// On a narrow phone the list and the detail show one at a time (the CSS below 780 px); paneDetail: the detail is up.
+let paneDetail = false, listTop = 0;
+const showList = () => { paneDetail = false; render(); };
+const backBtn = () => h('button', { class: 'btn se-back', onclick: showList }, '‹ 列表');
+const filt = { q: '', faction: 'all', status: G.SERVING, cityFaction: 'all' };
+
+// ---------- Changes against the record as loaded ----------
+function changes() {
+  if (!g) return [];
+  const out = [];
+  for (const o of g.officers) for (const [k, label] of OFFICER_FIELDS) {
+    const a = k === 'hp' ? hpText(base.officers[o.id]) : base.officers[o.id][k], b = k === 'hp' ? hpText(o) : o[k];
+    if (a !== b) out.push({ kind: 'officers', id: o.id, text: `${G.name(o.id)} ${label}`, a: show(k, a), b: show(k, b) });
+  }
+  for (const c of g.cities) for (const [k, label] of CITY_FIELDS) {
+    const a = base.cities[c.id][k], b = c[k];
+    if (a !== b) out.push({ kind: 'cities', id: c.id, text: `${G.cityName(c.id)} ${label}`, a, b });
+  }
+  for (const x of g.factions) for (const y of g.factions) if (x.id < y.id && base.factions[x.id].alliance[y.id] !== x.alliance[y.id])
+    out.push({ kind: 'alliance', text: `${G.factionName(g, x.id)}—${G.factionName(g, y.id)} 同盟`, a: `${base.factions[x.id].alliance[y.id]}月`, b: `${x.alliance[y.id]}月` });
+  const onOff = (v) => (v ? '开' : '关');
+  if (!!base.bugs?.ahuinan !== !!g.bugs?.ahuinan) out.push({ kind: 'bugs', text: '原版漏洞 阿会喃复制', a: onOff(base.bugs?.ahuinan), b: onOff(g.bugs?.ahuinan) });
+  if ((base.phantom?.owner ?? 0) !== (g.phantom?.owner ?? 0)) out.push({ kind: 'bugs', text: '王莆之主', a: G.factionName(base, base.phantom?.owner ?? 0), b: G.factionName(g, g.phantom?.owner ?? 0) });
+  return out;
+}
+const show = (k, v) => (k === 'weapon' ? D.equipment[v]?.name : k === 'armor' ? D.equipment[24 + v]?.name : v);
+const officerEdited = (id) => OFFICER_FIELDS.some(([k]) => (k === 'hp' ? hpText(base.officers[id]) !== hpText(g.officers[id]) : base.officers[id][k] !== g.officers[id][k]));
+const cityEdited = (id) => CITY_FIELDS.some(([k]) => base.cities[id][k] !== g.cities[id][k]);
+function refreshDock() {
+  const n = changes().length;
+  $('count').replaceChildren(...(g ? n ? ['已改', h('b', {}, n), '项'] : ['尚无改动'] : ['未打开记录']));
+  $('write').disabled = $('revert').disabled = !n; $('export').disabled = !g;
+  document.title = n ? `记录编辑 · 已改 ${n} 项` : '记录编辑';
+}
+
+// ---------- Slots ----------
+const slotRows = () => [{ s: G.loadQuick(), n: 'quick' }, ...G.saves().map((s, i) => ({ s, n: i + 1 }))];
+function slotCard({ s, n }, onPick) {
+  const cls = `slotc${n === 'quick' ? ' quick' : ''}`;
+  if (!s) return h('button', { class: cls, disabled: true }, h('span', { class: 'blank' }), h('span', { class: 'no' }, slotName(n)), h('span', { class: 'when' }, n === 'quick' && G.hasQuick() ? '无法读取' : '空'));
+  const ruler = s.factions[s.player].ruler;
+  return h('button', { class: `${cls} ${n === slot ? 'on' : ''}`, onclick: () => onPick(n), 'data-slot': n, title: `${G.factionName(s, s.player)} · ${s.year}年${s.month + 1}月` },
+    avatar(ruler), h('span', { class: 'no' }, slotName(n), s.edited ? h('i', {}, '已编辑') : null),
+    h('span', { class: 'when' }, `${s.year}年${s.month + 1}月 · ${G.name(ruler)}`));
+}
+function renderSlots() {
+  const rows = slotRows();
+  $('slots').replaceChildren(...rows.map((r) => slotCard(r, switchTo)));
+  return rows.map(({ s }) => s);
+}
+// The phone's 记录 button (the slot rail is folded away on short screens): the same cards in a dialog.
+async function pickSlot() {
+  const n = await modal('选择记录', (close) => [
+    h('div', { class: 'slots-rail', style: { gridTemplateColumns: 'repeat(4, minmax(0,1fr))', padding: 0 } }, slotRows().map((r) => slotCard(r, close))),
+    h('div', { class: 'foot' }, h('button', { class: 'btn', onclick: () => close(null) }, '取消'))], { wide: true });
+  if (n != null && await switchTo(n) && editorPad.active) selectedRow()?.focus();
+}
+async function switchTo(n) {
+  if (n === slot) return true;
+  if (changes().length && !(await ask('切换记录', h('p', {}, '当前记录还有未写回的改动，切换会丢弃它们。'), '丢弃并切换'))) return;
+  open(n);
+  return true;
+}
+function open(n) {
+  slot = n; quickOpened = n === 'quick' ? G.quickToken() : null; paneDetail = false; listTop = 0;
+  base = n === 'quick' ? G.loadQuick() : n ? G.load(n) : null; g = base ? clone(base) : null; pick = { officers: null, cities: null };
+  if (g) pick.officers = g.factions[g.player].ruler;
+  if (g) pick.cities = g.factions[g.player].city;
+  renderSlots(); render();
+}
+
+// ---------- Controls ----------
+// The phone layout's query (the CSS above); a change of window size re-renders, so the number boxes follow it.
+const shortScreen = matchMedia('(max-height: 520px) and (min-aspect-ratio: 4/3)');
+shortScreen.addEventListener('change', () => render());
+// The number keypad: digits replace the value at the first press, ⌫ takes one back, 最大 is the top of the range.
+function keypad(label, lo, hi, v0) {
+  return modal(label, (close) => {
+    let s = String(v0), fresh = true;
+    const out = h('output', { class: 'kp-val' });
+    const ok = h('button', { class: 'btn primary', onclick: () => close(Math.min(hi, Math.max(lo, Number(s)))) }, '确定');
+    const paint = () => { out.textContent = s === '' ? '—' : s; ok.disabled = s === ''; };
+    const key = (d) => { if (fresh) { s = ''; fresh = false; } if (s.length < String(hi).length) s = (s + d).replace(/^0+(?=\d)/, ''); paint(); };
+    const btn = (text, fn, label2) => h('button', { class: 'btn', onclick: fn, 'aria-label': label2 ?? text }, text);
+    paint();
+    return [h('div', { class: 'kp-wrap' },
+      h('div', { class: 'kp-side' }, out, h('small', {}, `范围 ${lo}–${hi}`),
+        h('div', { class: 'foot' }, h('button', { class: 'btn', onclick: () => close(null) }, '取消'), ok)),
+      h('div', { class: 'kp' }, [...'789456123'].map((d) => btn(d, () => key(d))),
+        btn('⌫', () => { fresh = false; s = s.slice(0, -1); paint(); }, '退格'), btn('0', () => key('0')),
+        btn('最大', () => { s = String(hi); fresh = true; paint(); })))];
+  });
+}
+// A button that acts at once when pressed and repeats while held (n: how many times so far); a key press acts once.
+function stepper(label, text, step) {
+  const b = h('button', { class: 'se-step', type: 'button', 'aria-label': label, tabindex: -1 }, text);
+  let t = null, n = 0;
+  const stop = () => { clearTimeout(t); t = null; };
+  const go = () => { if (b.disabled) return stop(); step(n++); t = setTimeout(go, n === 1 ? 420 : 70); };
+  b.addEventListener('pointerdown', (e) => { if (b.disabled || e.button > 0) return; e.preventDefault(); stop(); n = 0; b.setPointerCapture?.(e.pointerId); go(); });
+  for (const k of ['pointerup', 'pointercancel', 'lostpointercapture']) b.addEventListener(k, stop);
+  b.addEventListener('click', (e) => { if (e.detail === 0) step(0); });
+  return b;
+}
+// One stat row: label, a gold meter (white tick at the loaded value), the number and the change against it.
+function statRow(label, lo, hi, get, getBase, set, { disabled = false } = {}) {
+  const range = h('input', { type: 'range', min: lo, max: hi, step: 1, 'aria-label': label });
+  const num = h('input', { type: 'number', min: lo, max: hi, inputmode: 'numeric', 'aria-label': `${label}数值` });
+  const was = h('i', { class: 'was' }), delta = h('span', { class: 'se-delta' });
+  // − and + (shown on phones): held, they repeat, and after a while move in bigger steps (金 runs to 9999).
+  const span = hi - lo, by = (n) => (n < 12 ? 1 : Math.max(1, Math.round(span / (n < 30 ? 200 : 50))));
+  const minus = stepper(`${label}减`, '−', (n) => commit(get() - by(n))), plus = stepper(`${label}加`, '+', (n) => commit(get() + by(n)));
+  const row = h('div', { class: `stat ${disabled ? 'locked' : ''}` }, h('label', {}, label), h('div', { class: 'se-meter' }, range, was), h('div', { class: 'val' }, minus, num, plus, delta));
+  const pct = (v) => `${((v - lo) / (hi - lo)) * 100}%`;
+  const paint = () => {
+    const v = get(), b0 = getBase(), d = v - b0;
+    range.value = v; num.value = v; range.style.setProperty('--p', pct(v));
+    was.style.left = `calc(6px + (100% - 12px) * ${(b0 - lo) / (hi - lo)})`; was.hidden = !d;
+    row.classList.toggle('changed', !!d); minus.disabled = disabled || v <= lo; plus.disabled = disabled || v >= hi;
+    delta.className = `se-delta ${d > 0 ? 'up' : d < 0 ? 'down' : ''}`; delta.textContent = d ? `${d > 0 ? '+' : ''}${d}` : '';
+  };
+  const commit = (v) => { if (set(v) != null) { paint(); onEdit(); } else paint(); };
+  range.addEventListener('input', () => commit(range.value));
+  num.addEventListener('change', () => commit(num.value));
+  num.addEventListener('keydown', (e) => { if (e.key === 'Enter') num.blur(); });
+  // On a short screen the box opens the page's own keypad: the Android package is full screen, so the system
+  // keyboard would cover the box and everything around it (the WebView does not shrink for it).
+  num.readOnly = shortScreen.matches;
+  num.addEventListener('click', async () => { if (!num.readOnly || num.disabled) return; const v = await keypad(label, lo, hi, get()); if (v != null) commit(v); });
+  if (disabled) { range.disabled = num.disabled = true; }
+  paint();
+  row.paint = paint;
+  return row;
+}
+function gearPicker(o) {
+  const now = h('div', { class: 'se-gear-now' });
+  const line = (k, label, list, off) => {
+    const btns = list.map((e) => {
+      const b = h('button', { class: 'eq', title: `${e.name}  ${e.kind === 'weapon' ? `攻${e.atk}` : `防${e.dfn}`}  重${e.weight}`, 'aria-label': e.name },
+        h('img', { src: icon(e.id), alt: '' }));
+      b.onclick = () => { setOfficer(g, o.id, k, e.id - off); paint(); onEdit(); };
+      b.dataset.v = e.id - off; return b;
+    });
+    return { k, btns, el: h('div', { class: 'se-gear-row' }, h('span', { class: 'k' }, label), btns) };
+  };
+  // Weapons in the original's three groups of eight (wgrp = id / 8: 剑, 刀, 长兵), then armour.
+  const lines = [line('weapon', '剑', WEAPONS.slice(0, 8), 0), line('weapon', '刀', WEAPONS.slice(8, 16), 0), line('weapon', '长兵', WEAPONS.slice(16), 0), line('armor', '防具', ARMORS, 24)];
+  const paint = () => {
+    for (const { k, btns } of lines) for (const b of btns) { b.classList.toggle('on', Number(b.dataset.v) === o[k]); b.classList.toggle('was', Number(b.dataset.v) === base.officers[o.id][k] && o[k] !== base.officers[o.id][k]); }
+    const w = D.equipment[o.weapon], a = D.equipment[24 + o.armor];
+    const cw = o.weapon !== base.officers[o.id].weapon, ca = o.armor !== base.officers[o.id].armor;
+    now.replaceChildren('现装备 ', h('b', { class: cw ? 'changed' : '' }, w?.name ?? '—'), ` 攻${w?.atk ?? 0} 重${w?.weight ?? 0}　`, h('b', { class: ca ? 'changed' : '' }, a?.name ?? '—'), ` 防${a?.dfn ?? 0} 重${a?.weight ?? 0}`);
+  };
+  paint();
+  const el = h('div', { class: 'se-gear' }, lines.map((l) => l.el), now);
+  el.paint = paint; return el;
+}
+
+// ---------- Officers ----------
+const placeOf = (o) => (o.status === G.SERVING ? G.officerCity(g, o.id)?.id ?? null : o.status === G.RONIN ? o.loc : null);
+const rankOf = (o) => { const f = G.factionOf(g, o.id); return (o.status === G.SERVING ? (f === g.player ? 0 : 1 + f) - (G.isRuler(g, o.id) ? 0.5 : 0) : o.status === G.RONIN ? 10 : o.status === G.UNAPPEARED ? 20 : 30); };
+function officerRows() {
+  const q = toHans(filt.q.trim()); // 繁體 typed meets the 简体 names
+  return g.officers.filter((o) => (!q || G.name(o.id).includes(q) || String(o.id) === q)
+    && (filt.status === 'all' || o.status === filt.status)
+    && (filt.faction === 'all' || G.factionOf(g, o.id) === filt.faction))
+    .sort((a, b) => rankOf(a) - rankOf(b) || b.war - a.war);
+}
+function officerRow(o) {
+  const f = G.factionOf(g, o.id), at = placeOf(o);
+  const cls = `row ${pick.officers === o.id ? 'on' : ''} ${o.status === G.DEAD ? 'dead' : o.status === G.UNAPPEARED ? 'yet' : ''}`;
+  return h('button', { class: cls, 'data-id': o.id, onclick: () => { pick.officers = o.id; paneDetail = true; renderOfficers(true); } },
+    avatar(o.id),
+    h('div', {}, h('div', { class: 'nm' }, h('span', {}, G.name(o.id)), G.isRuler(g, o.id) ? h('em', {}, '君主') : null),
+      h('div', { class: 'sub' }, h('span', {}, '武', h('b', {}, o.war)), h('span', {}, '知', h('b', {}, o.int)), h('span', {}, '德', h('b', {}, o.virtue)), h('span', {}, '兵', h('b', {}, o.soldiers)))),
+    h('div', { class: 'tr' }, h('span', { class: 'fac' }, o.status === G.SERVING ? dot(f) : null, o.status === G.SERVING ? G.factionName(g, f) : STATUS[o.status]),
+      h('span', {}, at == null ? '' : G.cityName(at)), officerEdited(o.id) ? h('i', { class: 'edited', title: '已改动' }) : null));
+}
+function officerDetail(id) {
+  const o = g.officers[id], d = D.officers[id], f = G.factionOf(g, id), at = placeOf(o), dead = o.status === G.DEAD;
+  // Editing 体力 sets 体力上限 to the same value (core/saveedit.js); the tag shows the cap as it stands.
+  const capTag = h('span', { class: 'se-tag' }), paintCap = () => { capTag.textContent = `体力上限 ${G.maxHp(o)}`; capTag.classList.toggle('gold', G.maxHp(o) !== G.maxHp(base.officers[id])); };
+  const set = (k) => (v) => { const r = setOfficer(g, id, k, v); paintCap(); return r; };
+  const rows = STATS.map(([k, label, lo, hi]) => statRow(label, lo, hi, () => o[k], () => base.officers[id][k], set(k), { disabled: dead && k === 'hp' }));
+  paintCap();
+  const gear = gearPicker(o);
+  const repaint = () => { rows.forEach((r) => r.paint()); gear.paint(); paintCap(); onEdit(); };
+  const fig = figure(id, 'fig');
+  return h('div', { class: 'panel ed-box detail' },
+    h('div', { class: 'se-who' }, fig,
+      h('div', {}, h('h2', {}, G.name(id), h('small', {}, `No.${id} · ${d.army}军`)),
+        h('div', { class: 'tags' },
+          h('span', { class: 'se-tag' }, o.status === G.SERVING ? dot(f) : null, o.status === G.SERVING ? G.factionName(g, f) : STATUS[o.status]),
+          at != null ? h('span', { class: 'se-tag' }, G.cityName(at)) : null,
+          G.isRuler(g, id) ? h('span', { class: 'se-tag gold' }, '君主') : null,
+          capTag, h('span', { class: 'se-tag' }, `${d.year}年登场`))),
+      h('div', { class: 'se-acts' }, backBtn(),
+        h('button', { class: 'btn', disabled: dead, title: `武力、知力、人德、体力（连同上限）${hiOf('war')}，忠诚 100，兵 1000`, onclick: () => {
+          for (const k of ['war', 'int', 'virtue', 'hp', 'loyalty', 'soldiers']) setOfficer(g, id, k, hiOf(k));
+          repaint(); } }, '能力拉满'),
+        // 还原此人 copies the record as loaded, not through the ranges, so a legal value is never lowered (D172)
+        h('button', { class: 'btn', onclick: () => { const b = base.officers[id]; for (const [k] of OFFICER_FIELDS) o[k] = b[k]; if (b.maxHp == null) delete o.maxHp; else o.maxHp = b.maxHp; g.edited = true; repaint(); } }, '还原此人'))),
+    h('div', { class: 'sec' }, h('h4', {}, '能力'), h('div', { class: 'stats-ed' }, rows)),
+    h('div', { class: 'sec' }, h('h4', {}, '装备'), gear));
+}
+// The list's scroll is remembered (listTop), not read back: on a narrow phone the list is hidden while the detail is up.
+const rowsBox = (attrs, kids) => { const el = h('div', { class: 'rows', ...attrs }, kids); el.addEventListener('scroll', () => { listTop = el.scrollTop; }, { passive: true }); return el; };
+function renderOfficers(keepScroll = false) {
+  if (!keepScroll) listTop = 0;
+  const all = g.officers, counts = Object.fromEntries(STATUS_ORDER.map((s) => [s, all.filter((o) => o.status === s).length]));
+  const qi = h('input', { type: 'search', placeholder: '搜索武将名或编号', value: filt.q, 'aria-label': '搜索武将' });
+  qi.addEventListener('input', () => { filt.q = qi.value; fillRows(); });
+  const fs = h('select', { 'aria-label': '势力' }, h('option', { value: 'all' }, '全部势力'),
+    g.factions.filter((x) => x.ruler != null).map((x) => h('option', { value: x.id }, G.factionName(g, x.id))), h('option', { value: G.NONE }, '无主'));
+  fs.value = filt.faction; fs.onchange = () => { filt.faction = fs.value === 'all' ? 'all' : Number(fs.value); fillRows(); };
+  const chip = (v, label, n) => h('button', { class: `se-chip ${filt.status === v ? 'on' : ''}`, onclick: () => { filt.status = v; renderOfficers(); } }, label, n != null ? h('small', {}, n) : null);
+  const rowsEl = rowsBox({ role: 'listbox', 'aria-label': '武将' });
+  function fillRows() {
+    const list = officerRows();
+    rowsEl.replaceChildren(...(list.length ? list.map(officerRow) : [h('div', { class: 'se-none' }, '没有符合条件的武将')]));
+  }
+  fillRows();
+  const id = pick.officers;
+  $('body').replaceChildren(h('div', { class: `md ${paneDetail ? 'pane-detail' : ''}` },
+    h('div', { class: 'panel ed-box list' },
+      h('div', { class: 'list-bar' }, qi, fs, h('div', { class: 'se-chips' }, chip('all', '全部', all.length), STATUS_ORDER.map((s) => chip(s, STATUS[s], counts[s])))),
+      rowsEl),
+    id == null ? h('div', { class: 'panel ed-box detail' }, h('div', { class: 'se-none' }, '从左侧选一位武将')) : officerDetail(id)));
+  if (keepScroll) rowsEl.scrollTop = listTop;
+  if (document.activeElement === document.body && filt.q) { qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
+}
+
+// ---------- Cities ----------
+function cityRow(c) {
+  return h('button', { class: `row ${pick.cities === c.id ? 'on' : ''}`, onclick: () => { pick.cities = c.id; paneDetail = true; renderCities(true); } },
+    c.officers.length ? avatar(c.officers[0]) : h('span', { class: 'blank' }),
+    h('div', {}, h('div', { class: 'nm' }, h('span', {}, G.cityName(c.id))),
+      h('div', { class: 'sub' }, h('span', {}, '金', h('b', {}, c.gold)), h('span', {}, '米', h('b', {}, c.rice)), h('span', {}, '将', h('b', {}, c.officers.length)))),
+    h('div', { class: 'tr' }, h('span', { class: 'fac' }, dot(c.faction), G.factionName(g, c.faction)), cityEdited(c.id) ? h('i', { class: 'edited', title: '已改动' }) : null));
+}
+function cityDetail(cid) {
+  const c = g.cities[cid], fac = D.cities[cid].facilities;
+  const rows = CITY_FIELDS.map(([k, label, lo, hi]) => statRow(label, lo, hi, () => c[k], () => base.cities[cid][k], (v) => setCity(g, cid, k, v)));
+  const repaint = () => { rows.forEach((r) => r.paint()); onEdit(); };
+  const has = [['market', '市场'], ['hospital', '病院'], ['school', '学问所'], ['weapons', '武器屋']].filter(([k]) => fac[k]).map(([, n]) => n);
+  return h('div', { class: 'panel ed-box detail' },
+    h('div', { class: 'se-who city' },
+      h('div', {}, h('h2', {}, G.cityName(cid), h('small', {}, `No.${cid}`)),
+        h('div', { class: 'tags' }, h('span', { class: 'se-tag' }, dot(c.faction), G.factionName(g, c.faction)), has.map((n) => h('span', { class: 'se-tag' }, n))),
+        c.officers.length ? h('div', { class: 'gov' }, c.officers.map((id) => h('span', { title: G.name(id) }, avatar(id)))) : null),
+      h('div', { class: 'se-acts' }, backBtn(),
+        h('button', { class: 'btn', title: '金、米 9999', onclick: () => { setCity(g, cid, 'gold', 9999); setCity(g, cid, 'rice', 9999); repaint(); } }, '金米充足'),
+        h('button', { class: 'btn', title: '全部项目拉到上限', onclick: () => { for (const [k, , , hi] of CITY_FIELDS) setCity(g, cid, k, hi); repaint(); } }, '全部拉满'),
+        h('button', { class: 'btn', onclick: () => { for (const [k] of CITY_FIELDS) setCity(g, cid, k, base.cities[cid][k]); repaint(); } }, '还原此城'))),
+    h('div', { class: 'sec' }, h('h4', {}, '资源'), h('div', { class: 'stats-ed' }, rows.slice(0, 4))),
+    h('div', { class: 'sec' }, h('h4', {}, '内政'), h('div', { class: 'stats-ed' }, rows.slice(4))));
+}
+function renderCities(keepScroll = false) {
+  if (!keepScroll) listTop = 0;
+  const live = g.factions.filter((x) => x.ruler != null);
+  const chip = (v, label) => h('button', { class: `se-chip ${filt.cityFaction === v ? 'on' : ''}`, onclick: () => { filt.cityFaction = v; renderCities(); } }, v === 'all' ? null : dot(v), label);
+  const list = g.cities.filter((c) => filt.cityFaction === 'all' || c.faction === filt.cityFaction);
+  const rowsEl = rowsBox({}, list.length ? list.map(cityRow) : h('div', { class: 'se-none' }, '该势力没有城市'));
+  $('body').replaceChildren(h('div', { class: `md ${paneDetail ? 'pane-detail' : ''}` },
+    h('div', { class: 'panel ed-box list' }, h('div', { class: 'list-bar' }, h('div', { class: 'se-chips' }, chip('all', '全部'), live.map((x) => chip(x.id, G.factionName(g, x.id))), chip(G.NONE, '无主'))), rowsEl),
+    pick.cities == null ? h('div', { class: 'panel ed-box detail' }, h('div', { class: 'se-none' }, '从左侧选一座城')) : cityDetail(pick.cities)));
+  if (keepScroll) rowsEl.scrollTop = listTop;
+}
+
+// ---------- Alliances ----------
+function renderAlliance() {
+  const live = g.factions.filter((x) => x.ruler != null);
+  const lead = (x) => h('div', { class: 'lead' }, avatar(x.ruler), h('span', { class: 'fac' }, dot(x.id), G.factionName(g, x.id), x.id === g.player ? h('small', { style: { color: 'var(--gold)' } }, '玩家') : null));
+  const cell = (a, b) => {
+    if (a.id === b.id) return h('td', { class: 'self' });
+    const td = h('td', { 'data-a': a.id, 'data-b': b.id });
+    const out = h('output'), unit = h('small'), minus = h('button', { 'aria-label': '减一个月' }, '−'), plus = h('button', { 'aria-label': '加一个月' }, '+');
+    const paint = () => {
+      const v = a.alliance[b.id];
+      out.textContent = v || '—'; unit.textContent = v ? '个月' : '未结盟'; minus.disabled = v <= 0; plus.disabled = v >= ALLIANCE_MAX;
+      td.classList.toggle('on', v > 0); td.classList.toggle('changed', v !== base.factions[a.id].alliance[b.id]);
+    };
+    const step = (dv) => { setAlliance(g, a.id, b.id, a.alliance[b.id] + dv); document.querySelectorAll(`.al td[data-a="${b.id}"][data-b="${a.id}"], .al td[data-a="${a.id}"][data-b="${b.id}"]`).forEach((t) => t.paint()); onEdit(); };
+    minus.onclick = () => step(-1); plus.onclick = () => step(1);
+    td.append(h('span', { class: 'step' }, minus, out, plus), unit);
+    td.paint = paint;
+    // Hovering a pair lights its mirror, since both sides always change together.
+    td.onmouseenter = () => document.querySelector(`.al td[data-a="${b.id}"][data-b="${a.id}"]`)?.classList.add('hot');
+    td.onmouseleave = () => document.querySelectorAll('.al td.hot').forEach((t) => t.classList.remove('hot'));
+    paint(); return td;
+  };
+  $('body').replaceChildren(h('div', { class: 'panel ed-box al' },
+    h('p', {}, '同盟剩余月数，0 为未结盟，最长 12 个月。双方总是一起改动。'),
+    h('div', { class: 'al-wrap' }, h('table', {},
+      h('thead', {}, h('tr', {}, h('th'), live.map((x) => h('th', {}, lead(x))))),
+      h('tbody', {}, live.map((a) => h('tr', {}, h('th', {}, lead(a)), live.map((b) => cell(a, b)))))))));
+}
+
+// ---------- 原版漏洞 ----------
+// The 阿会喃 bug (core/ahuinan.js, research/ahuinan-bug-evidence.md), kept per record: off in every record by default.
+function renderBugs() {
+  const on = !!g.bugs?.ahuinan, owner = g.phantom?.owner ?? 0, a0 = g.officers[0];
+  const copies = (g.clones ?? []).filter((id) => g.officers[id] && g.officers[id].status !== G.DEAD);
+  const sw = h('button', { class: `se-switch ${on ? 'on' : ''}`, role: 'switch', 'aria-checked': String(on), onclick: () => { setBug(g, 'ahuinan', !on); onEdit(); renderBugs(); } },
+    h('i'), h('span', {}, on ? '已开启' : '已关闭'));
+  const live = g.factions.filter((x) => x.ruler != null);
+  const owners = h('div', { class: 'se-owners' }, live.map((x) => h('button', { class: `se-owner ${x.id === owner ? 'on' : ''}`, onclick: () => { setPhantomOwner(g, x.id); onEdit(); renderBugs(); } },
+    avatar(x.ruler), h('span', { class: 'fac' }, dot(x.id), G.factionName(g, x.id)), x.id === g.player ? h('small', {}, '玩家') : null)));
+  const where = (id) => { const o = g.officers[id], c = G.officerCity(g, id); return o.status === G.RONIN ? `在野·${G.cityName(o.loc)}` : c ? G.cityName(c.id) : '—'; };
+  $('body').replaceChildren(h('div', { class: 'panel ed-box bug' },
+    h('div', { class: 'bug-hero' }, figure(0, 'fig'),
+      h('div', {}, h('h2', {}, '阿会喃复制', h('small', {}, 'FC 原版的「王莆」漏洞')), sw,
+        h('p', {}, '开启后，这份记录里的 AI 势力一旦找不到可以进攻的敌城（四周的敌国都与它同盟，或周围只有空城），就会像原版一样向地图上不存在的「王莆」出兵。王莆的守军和来犯者全是阿会喃，战斗自动结算。'))),
+    h('ol', { class: 'bug-steps' },
+      h('li', {}, h('b', {}, '触发'), '让某个 AI 势力的所有敌对邻国都与它结盟（「同盟」页可以直接改），并给它的城市足够的金米——出兵要花真金白银。'),
+      h('li', {}, h('b', {}, '流落'), `打输且不肯投降的阿会喃会去王莆之主在${PHANTOM_ROADS.map(G.cityName).join('、')}中的城；那里没有它的城就占一座空城，再不行就在这四城附近成为在野武将，可以去搜索招募。`),
+      h('li', {}, h('b', {}, '数值'), `复制体的能力取自出兵那一刻阿会喃本人的数值（现为 武${a0.war} 知${a0.int} 德${a0.virtue}）。在「武将」页把阿会喃调高，之后出现的每个复制体都一样强。`,
+        h('button', { class: 'btn', onclick: () => { tab = 'officers'; pick.officers = 0; filt.status = 'all'; filt.q = ''; paneDetail = true; render(); } }, '去调整阿会喃'))),
+    h('div', { class: 'sec' }, h('h4', {}, '王莆之主'), h('p', { class: 'hint' }, '守王莆的一方；来犯者打赢后王莆归它所有。原版开局是董卓。'), owners),
+    h('div', { class: 'sec' }, h('h4', {}, `现有复制体 ${copies.length}`),
+      copies.length ? h('div', { class: 'copies' }, copies.map((id) => h('button', { class: 'copy', title: `No.${id}`, onclick: () => { tab = 'officers'; pick.officers = id; filt.status = 'all'; filt.q = ''; paneDetail = true; render(); } },
+        avatar(id), h('span', {}, where(id)), h('small', {}, `武${g.officers[id].war}`))))
+        : h('p', { class: 'hint' }, on ? '还没有阿会喃流落出来。' : '开启后，流落出来的阿会喃会列在这里。'))));
+}
+
+// ---------- Frame ----------
+function renderTabs() {
+  const n = changes(), by = (k) => n.filter((c) => c.kind === k).length;
+  const tabBtn = (k, label) => h('button', { class: `btn ${tab === k ? 'on' : ''}`, onclick: () => { tab = k; paneDetail = false; render(); } }, label, by(k) ? h('small', {}, `改${by(k)}`) : null);
+  $('tabs').replaceChildren(h('button', { class: 'btn slotpick', 'aria-label': '选择记录', onclick: pickSlot }, slotName(slot), h('small', {}, `${g.year}年${g.month + 1}月`)),
+    tabBtn('officers', '武将'), tabBtn('cities', '城市'), tabBtn('alliance', '同盟'), tabBtn('bugs', '原版漏洞'), h('span', { class: 'sp' }),
+    g ? h('span', { class: 'meta' }, '玩家 ', h('b', {}, G.factionName(g, g.player)), `　${g.year}年${g.month + 1}月　LEVEL ${g.level + 1}`) : null);
+}
+function onEdit() {
+  refreshDock(); renderTabs();
+  // Keep the list's figures and edited marks in step without rebuilding it (focus stays in the field).
+  const sel = document.querySelector('.rows .row.on');
+  if (sel && tab === 'officers') sel.replaceWith(officerRow(g.officers[pick.officers]));
+  if (sel && tab === 'cities') sel.replaceWith(cityRow(g.cities[pick.cities]));
+}
+function render() {
+  refreshDock();
+  if (!g) {
+    $('tabs').replaceChildren();
+    $('body').replaceChildren(h('div', { class: 'panel ed-box empty-state' }, h('h3', {}, '尚无记录'),
+      h('p', {}, '先在游戏里用「城 → 记录」存一次，或用「导入」读入导出过的记录文件。')));
+    return;
+  }
+  renderTabs();
+  ({ officers: renderOfficers, cities: renderCities, alliance: renderAlliance, bugs: renderBugs })[tab]();
+}
+
+// ---------- Dialogs and actions ----------
+const ask = (title, body, ok) => modal(title, (close) => [...[body].flat(), h('div', { class: 'foot' }, h('button', { class: 'btn', onclick: () => close(false) }, '取消'), h('button', { class: 'btn primary', onclick: () => close(true) }, ok))]);
+function diffList(list) {
+  const shown = list.slice(0, 60);
+  return h('ul', { class: 'diff' }, shown.map((c) => h('li', {}, h('span', {}, c.text), h('span', {}, `${c.a} → `, h('b', {}, c.b)))),
+    list.length > shown.length ? h('li', {}, h('span', {}, `……另有 ${list.length - shown.length} 项`), h('span')) : null);
+}
+$('write').onclick = async () => {
+  const list = changes(); if (!list.length) return;
+  const target = slot, editing = g, snapshot = target === 'quick' ? clone(g) : null, token = quickOpened, approved = snapshot && JSON.stringify(snapshot);
+  if (!(await ask(`写回${slotName(slot)}`, [h('p', {}, `以下 ${list.length} 项改动将覆盖原记录。需要留底的话，先「导出」一份。`), diffList(list)], '写回'))) return;
+  if (target === 'quick') {
+    let written = null;
+    const result = await G.saveQuickChecked(snapshot, token, {
+      isCurrent: () => slot === target && g === editing && JSON.stringify(g) === approved,
+      onSaved: (raw) => { written = raw; },
+    });
+    if (result === 'changed') { toast('<em>快捷存档已改变</em>，请重新打开后再编辑', 3500); return; }
+    if (result === 'cancelled') { toast('<em>编辑内容已变化</em>，请重新写回', 3500); return; }
+    if (result === 'busy') { toast('<em>快捷存档正在使用</em>，请稍后再试', 3500); return; }
+    if (result === 'unavailable') { toast('<em>当前环境暂不能写回快捷存档</em>', 3500); return; }
+    if (result !== 'saved') { toast('<em>写回失败</em>：浏览器存储不可用或已满', 3000); return; }
+    // If edits arrive just after the write, use the written snapshot as the baseline and keep those edits.
+    if (slot === target && g === editing) {
+      if (!written || G.quickToken() !== written) { toast('<em>快捷存档已再次改变</em>，请重新打开', 3500); return; }
+      const stored = G.loadSnapshot(JSON.parse(written), { quick: true });
+      base = clone(stored); quickOpened = written; g.quickId = stored.quickId;
+      renderSlots(); render();
+    }
+    toast(`<strong>已写回${slotName(target)}</strong>　回到游戏读取即可`, 3200);
+    return;
+  }
+  if (!G.save(g, slot)) { toast('<em>写回失败</em>：浏览器存储不可用或已满', 3000); return; }
+  open(slot); toast(`<strong>已写回${slotName(slot)}</strong>　回到游戏读取即可`, 3200);
+};
+$('revert').onclick = async () => {
+  const n = changes().length; if (!n) return;
+  if (await ask('放弃改动', h('p', {}, `放弃尚未写回的 ${n} 项改动，恢复为记录中的数值？`), '放弃')) { const keep = { ...pick }; open(slot); pick = keep; render(); }
+};
+// The Android package (apk/.../MainActivity.java) exposes NativeFiles: its WebView drops <a download> and blob: links
+// without a word, and its file chooser offers only files typed as JSON (one sent through a chat app reads as
+// octet-stream). save() opens the system's 保存到… sheet and open() its file picker; each answers once through
+// window.__nativeFile({ ok, name, where, text, error }), and a cancelled sheet answers { ok: false }.
+const nativeFiles = window.NativeFiles;
+let fileWait = null;
+window.__nativeFile = (r) => { const f = fileWait; fileWait = null; f?.(r || {}); };
+const viaShell = (call) => new Promise((resolve) => { fileWait?.({}); fileWait = resolve; try { call(); } catch { window.__nativeFile({ error: 'unavailable' }); } });
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
+$('export').onclick = async () => {
+  if (!g) return;
+  const name = `threekindoms-${slotName(slot)}-${g.year}年${g.month + 1}月.json`, text = JSON.stringify(g, null, 1);
+  if (nativeFiles) {
+    const r = await viaShell(() => nativeFiles.save(name, text));
+    if (r.ok) toast(`<strong>已导出</strong>　${esc(r.name || name)}${r.where ? `<br>保存在「${esc(r.where)}」` : ''}`, 4200);
+    else if (r.error) toast('<em>导出失败</em>：没能写入所选的位置', 3500);
+    return;
+  }
+  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  h('a', { href: url, download: name }).click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast(`<strong>已导出</strong>　${esc(name)}`, 3200);
+};
+$('import').onclick = async () => {
+  if (!nativeFiles) return $('file').click();
+  const r = await viaShell(() => nativeFiles.open());
+  if (r.ok && r.text != null) importRecord(r.name || '记录文件', r.text);
+  else if (r.error === 'too-big') toast('<em>无法导入</em>：文件太大，不是记录文件', 3000);
+  else if (r.error) toast('<em>无法导入</em>：读不出所选的文件', 3000);
+};
+$('file').onchange = async () => {
+  const file = $('file').files[0]; $('file').value = ''; if (!file) return;
+  importRecord(file.name, await file.text());
+};
+async function importRecord(fileName, text) {
+  let rec; try { rec = JSON.parse(text); } catch { toast('<em>无法导入</em>：文件不是有效的 JSON', 3000); return; }
+  const err = checkRecord(rec); if (err) { toast(`<em>无法导入</em>：${err}`, 3000); return; }
+  const list = G.saves();
+  const n = await modal('导入到哪个记录槽', (close) => [h('p', {}, `${fileName} · ${rec.year}年${rec.month + 1}月 · ${G.factionName(rec, rec.player)}。已有记录的槽会被覆盖。`),
+    h('div', { class: 'slots-rail', style: { gridTemplateColumns: 'repeat(4, minmax(0,1fr))', padding: 0 } }, list.map((s, i) => h('button', { class: 'slotc', onclick: () => close(i + 1) },
+      s ? avatar(s.factions[s.player].ruler) : h('span', { class: 'blank' }), h('span', { class: 'no' }, `记录${SLOT_NAMES[i]}`), h('span', { class: 'when' }, s ? `${s.year}年${s.month + 1}月` : '空')))),
+    h('div', { class: 'foot' }, h('button', { class: 'btn', onclick: () => close(null) }, '取消'))], { wide: true });
+  if (!n) return;
+  if (n === slot && changes().length && !(await ask('覆盖当前记录', h('p', {}, '这个槽正在编辑，未写回的改动会丢失。'), '覆盖'))) return;
+  if (!G.save(rec, n)) { toast('<em>导入失败</em>：浏览器存储不可用或已满', 3000); return; }
+  open(n); toast(`<strong>已导入到记录${SLOT_NAMES[n - 1]}</strong>`, 2400);
+}
+// 返回游戏 asks in the page about unwritten changes: the desktop shell blocks a beforeunload without a dialog.
+let leaving = false;
+$('back').onclick = $('back-rail').onclick = async () => {
+  const n = changes().length;
+  if (n && !(await ask('返回游戏', h('p', {}, `尚未写回的 ${n} 项改动会丢失。`), '放弃并返回'))) return;
+  leaving = true; location.replace(`index.html${location.search}`); // no history entry: a mouse's back button has nowhere to go
+};
+// Esc (and so the Android back key, which the package sends as Esc) steps back from a phone's detail pane to its list;
+// with a dialog open the dialog takes it.
+const onePane = matchMedia('(max-height: 520px) and (min-aspect-ratio: 4/3) and (max-width: 779.98px)');
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && paneDetail && onePane.matches && !document.querySelector('.shade') && (tab === 'officers' || tab === 'cities')) { e.preventDefault(); showList(); }
+}, true);
+addEventListener('beforeunload', (e) => { if (!leaving && changes().length) e.preventDefault(); });
+// Focus moves between slots, the roster and the detail pane. Re-rendered rows are found by selection,
+// so editing a general below the fold returns to that same general.
+const selectedRow = () => document.querySelector('.rows .row.on') ?? document.querySelector('.rows .row');
+const selectedSlot = () => [...document.querySelectorAll('#slots .slotc.on, #tabs .slotpick')].find(shown)
+  ?? [ $('back'), $('back-rail') ].find(shown);
+const modalTop = () => $('ui-top').lastElementChild;
+const editorPad = createPad({
+  onActivate() { if (!modalTop()) selectedSlot()?.focus(); },
+  onFrame() {
+    if (!editorPad.active) return;
+    const dialog = modalTop(), a = document.activeElement;
+    if (dialog && (!dialog.contains(a) || a.matches('.panel'))) firstIn(dialog)?.focus();
+    else if (!dialog && a === document.body) selectedSlot()?.focus();
+  },
+  onButton(k, phase) {
+    if (phase !== 'press') return;
+    const dialog = modalTop(), a = document.activeElement;
+    if (dialog) {
+      if (k === 'b') sendKey('Escape');
+      if (k === 'a') (dialog.contains(a) && a.matches('button') ? a : firstIn(dialog))?.click();
+      return;
+    }
+    if (k === 'start') return $('write').click();
+    if (k === 'b') {
+      if (a.closest('.detail')) { showList(); selectedRow()?.focus(); }
+      else if (a.closest('#body')) selectedSlot()?.focus();
+      else $('back').click();
+      return;
+    }
+    if (k !== 'a') return;
+    if (a.matches('#slots [data-slot]')) {
+      switchTo(a.dataset.slot === 'quick' ? 'quick' : Number(a.dataset.slot)).then(ok => {
+        if (ok) selectedRow()?.focus();
+      });
+    } else if (a.matches('.rows .row')) {
+      a.click();
+      document.querySelector('.detail input[type=range]:not(:disabled)')?.focus();
+    } else if (a.matches('button')) a.click();
+  },
+  onDir(dx, dy) {
+    const dialog = modalTop(), a = document.activeElement;
+    if (dialog) return walk(dialog, dx, dy);
+    if (a.matches('.detail input[type=range]')) {
+      if (dy) {
+        const rows = [...document.querySelectorAll('.detail input[type=range]:not(:disabled)')];
+        const next = rows[rows.indexOf(a) + dy];
+        if (next) next.focus();
+        else walk(document.body, 0, dy);
+      } else if (dx) {
+        dx > 0 ? a.stepUp() : a.stepDown();
+        a.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      return;
+    }
+    if (a.matches('.rows .row') && dy) {
+      const next = dy > 0 ? a.nextElementSibling : a.previousElementSibling;
+      if (next) { next.focus(); return; }
+    }
+    if (a.matches('select') && dx) {
+      a.selectedIndex = Math.max(0, Math.min(a.length - 1, a.selectedIndex + dx));
+      a.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+    const next = walk(document.body, dx, dy);
+    if (next?.matches('.stat input[type=number]')) next.closest('.stat').querySelector('input[type=range]').focus();
+  },
+  onLook() {},
+});
+window.__editor = { get g() { return g; }, get slot() { return slot; }, changes };
+
+const list = renderSlots(), latest = G.latest(list);
+open(latest ? latest.slot ?? 'quick' : null);
+</script>
+</body>
+</html>

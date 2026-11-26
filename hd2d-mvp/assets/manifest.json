@@ -1,0 +1,217 @@
+{
+ "_comment": "Optional assets. Paths are relative to hd2d-mvp/; for a list the first existing file wins. Missing files (the original-game and remix audio are never part of this repository) fall back to code-drawn or synthesized placeholders.",
+ "portraits": {
+  "8": [
+   "assets/ai/portraits/8.webp",
+   "assets/ai/portraits/8.png"
+  ],
+  "38": [
+   "assets/ai/portraits/38.webp",
+   "assets/ai/portraits/38.png"
+  ],
+  "51": [
+   "assets/ai/portraits/51.webp",
+   "assets/ai/portraits/51.png"
+  ],
+  "153": [
+   "assets/ai/portraits/153.webp",
+   "assets/ai/portraits/153.png"
+  ],
+  "167": [
+   "assets/ai/portraits/167.webp",
+   "assets/ai/portraits/167.png"
+  ],
+  "191": [
+   "assets/ai/portraits/191.webp",
+   "assets/ai/portraits/191.png"
+  ],
+  "222": [
+   "assets/ai/portraits/222.webp",
+   "assets/ai/portraits/222.png"
+  ]
+ },
+ "sprites": {
+  "attacker-general": "assets/ai/sprites/attacker-general.png",
+  "defender-general": "assets/ai/sprites/defender-general.png",
+  "attacker-soldier": "assets/ai/sprites/attacker-soldier.png",
+  "defender-soldier": "assets/ai/sprites/defender-soldier.png",
+  "attacker-archer": "assets/ai/sprites/attacker-archer.png",
+  "attacker-cavalry": "assets/ai/sprites/attacker-cavalry.png",
+  "defender-archer": "assets/ai/sprites/defender-archer.png",
+  "defender-cavalry": "assets/ai/sprites/defender-cavalry.png"
+ },
+ "audio": {
+  "bgm-strategy": [
+   "assets/audio/remix/bgm-strategy.mp3",
+   "assets/audio/original/bgm-strategy.mp3"
+  ],
+  "bgm-battle": [
+   "assets/audio/remix/bgm-battle.mp3",
+   "assets/audio/original/bgm-battle.mp3"
+  ],
+  "bgm-skirmish": [
+   "assets/audio/remix/bgm-skirmish.mp3",
+   "assets/audio/original/bgm-skirmish.mp3"
+  ],
+  "bgm-duel": [
+   "assets/audio/remix/bgm-duel.mp3",
+   "assets/audio/original/bgm-duel.mp3"
+  ],
+  "bgm-result": [
+   "assets/audio/remix/bgm-result.mp3",
+   "assets/audio/original/bgm-result.mp3"
+  ],
+  "sfx-select": [
+   "assets/audio/sfx-select.mp3",
+   "assets/audio/original/sfx-select.mp3"
+  ],
+  "sfx-cancel": [
+   "assets/audio/sfx-cancel.mp3",
+   "assets/audio/original/sfx-cancel.mp3"
+  ],
+  "sfx-step": [
+   "assets/audio/sfx-step.mp3",
+   "assets/audio/original/sfx-step.mp3"
+  ],
+  "sfx-volley-land": [
+   "assets/audio/original/sfx-volley-land.mp3"
+  ],
+  "sfx-clash": [
+   "assets/audio/sfx-clash.mp3",
+   "assets/audio/original/sfx-clash.mp3"
+  ],
+  "sfx-blast": [
+   "assets/audio/sfx-blast.mp3"
+  ],
+  "sfx-duel-ride": [
+   "assets/audio/original/sfx-duel-ride.mp3"
+  ],
+  "sfx-duel-swing": [
+   "assets/audio/original/sfx-duel-swing.mp3"
+  ],
+  "sfx-chime": [
+   "assets/audio/original/sfx-chime.mp3"
+  ],
+  "sfx-duel-desperate": [
+   "assets/audio/original/sfx-duel-desperate.mp3"
+  ],
+  "sfx-duel-blow": [
+   "assets/audio/original/sfx-duel-blow.mp3"
+  ],
+  "sfx-horn": [
+   "assets/audio/sfx-horn.mp3",
+   "assets/audio/original/sfx-horn.mp3"
+  ],
+  "sfx-victory": [
+   "assets/audio/sfx-victory.mp3",
+   "assets/audio/original/sfx-victory.mp3"
+  ],
+  "bgm-title": [
+   "assets/audio/remix/bgm-title.mp3",
+   "assets/audio/original/bgm-title.mp3"
+  ],
+  "bgm-select": [
+   "assets/audio/remix/bgm-select.mp3",
+   "assets/audio/original/bgm-select.mp3",
+   "assets/audio/remix/bgm-title.mp3",
+   "assets/audio/original/bgm-title.mp3"
+  ],
+  "bgm-ending": [
+   "assets/audio/remix/bgm-ending.mp3",
+   "assets/audio/original/bgm-ending.mp3"
+  ],
+  "bgm-gameover": [
+   "assets/audio/remix/bgm-gameover.mp3",
+   "assets/audio/original/bgm-gameover.mp3"
+  ],
+  "sfx-arrow": [
+   "assets/audio/sfx-arrow.mp3",
+   "assets/audio/original/sfx-arrow.mp3"
+  ],
+  "cue-land": [
+   "assets/audio/remix/cue-land.mp3",
+   "assets/audio/original/cue-land.mp3",
+   "assets/audio/cue-land.mp3"
+  ],
+  "cue-industry": [
+   "assets/audio/remix/cue-industry.mp3",
+   "assets/audio/original/cue-industry.mp3",
+   "assets/audio/cue-industry.mp3"
+  ],
+  "cue-town": [
+   "assets/audio/remix/cue-town.mp3",
+   "assets/audio/original/cue-town.mp3",
+   "assets/audio/cue-town.mp3"
+  ],
+  "cue-move": [
+   "assets/audio/remix/cue-move.mp3",
+   "assets/audio/original/cue-move.mp3",
+   "assets/audio/cue-move.mp3"
+  ],
+  "cue-envoy": [
+   "assets/audio/remix/cue-envoy.mp3",
+   "assets/audio/original/cue-envoy.mp3",
+   "assets/audio/cue-envoy.mp3"
+  ],
+  "cue-record": [
+   "assets/audio/remix/cue-record.mp3",
+   "assets/audio/original/cue-record.mp3",
+   "assets/audio/cue-record.mp3"
+  ],
+  "cue-sortie": [
+   "assets/audio/remix/cue-sortie.mp3",
+   "assets/audio/original/cue-sortie.mp3",
+   "assets/audio/cue-sortie.mp3"
+  ],
+  "cue-conscript": [
+   "assets/audio/remix/cue-conscript.mp3",
+   "assets/audio/original/cue-conscript.mp3",
+   "assets/audio/cue-conscript.mp3"
+  ],
+  "cue-study": [
+   "assets/audio/remix/cue-study.mp3",
+   "assets/audio/original/cue-study.mp3",
+   "assets/audio/cue-study.mp3"
+  ],
+  "cue-st-fire": [
+   "assets/audio/remix/cue-st-fire.mp3",
+   "assets/audio/original/cue-st-fire.mp3",
+   "assets/audio/cue-st-fire.mp3"
+  ],
+  "cue-st-ruse": [
+   "assets/audio/remix/cue-st-ruse.mp3",
+   "assets/audio/original/cue-st-ruse.mp3",
+   "assets/audio/cue-st-ruse.mp3"
+  ],
+  "cue-st-lure": [
+   "assets/audio/remix/cue-st-lure.mp3",
+   "assets/audio/original/cue-st-lure.mp3",
+   "assets/audio/cue-st-lure.mp3"
+  ],
+  "cue-st-trap": [
+   "assets/audio/remix/cue-st-trap.mp3",
+   "assets/audio/original/cue-st-trap.mp3",
+   "assets/audio/cue-st-trap.mp3"
+  ],
+  "cue-disaster": [
+   "assets/audio/remix/cue-disaster.mp3",
+   "assets/audio/original/cue-disaster.mp3",
+   "assets/audio/cue-disaster.mp3"
+  ],
+  "cue-aiwar": [
+   "assets/audio/remix/cue-aiwar.mp3",
+   "assets/audio/original/cue-aiwar.mp3",
+   "assets/audio/cue-aiwar.mp3"
+  ],
+  "cue-income": [
+   "assets/audio/remix/cue-income.mp3",
+   "assets/audio/original/cue-income.mp3",
+   "assets/audio/cue-income.mp3"
+  ],
+  "cue-levelup": [
+   "assets/audio/remix/cue-levelup.mp3",
+   "assets/audio/original/cue-levelup.mp3",
+   "assets/audio/cue-levelup.mp3"
+  ]
+ }
+}

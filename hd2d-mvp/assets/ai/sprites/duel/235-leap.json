@@ -1,0 +1,24 @@
+{
+ "frames": [
+  "idle_ref",
+  "leap_up",
+  "leap_apex",
+  "leap_dive",
+  "leap_slam",
+  "leap_miss"
+ ],
+ "cell": [
+  179,
+  139
+ ],
+ "anchor": 82,
+ "figH": 112,
+ "base": {
+  "idle_ref": 0,
+  "leap_up": 0,
+  "leap_apex": 0,
+  "leap_dive": 0,
+  "leap_slam": 0,
+  "leap_miss": 1
+ }
+}
