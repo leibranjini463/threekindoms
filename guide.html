@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新手攻略 · 三国 HD-2D（霸王的大陆重制）</title>
+<style>
+  :root{
+    --bg:#0d1020;
+    --bg2:#151a30;
+    --card:#1a2038;
+    --card2:#20274200;
+    --gold:#e8c268;
+    --gold-dim:#b9974f;
+    --text:#e9e4d4;
+    --muted:#a9a58f;
+    --red:#e07856;
+    --green:#8fc97a;
+    --line:#333a5c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:radial-gradient(1200px 600px at 50% -100px,#232c52 0%,var(--bg) 55%) fixed,var(--bg);
+    color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    line-height:1.75;
+    font-size:16px;
+    padding:0 16px 64px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+  header{text-align:center;padding:40px 0 8px}
+  header .kicker{color:var(--gold-dim);letter-spacing:.35em;font-size:12px}
+  header h1{font-size:32px;color:var(--gold);margin:10px 0 6px;font-weight:800}
+  header p{color:var(--muted);font-size:14px}
+  .play{
+    display:block;text-align:center;margin:26px auto 8px;max-width:420px;
+    background:linear-gradient(180deg,#f0cd78,#d9ab45);color:#241a05;
+    font-size:19px;font-weight:800;text-decoration:none;
+    padding:14px 20px;border-radius:12px;
+    box-shadow:0 6px 24px rgba(232,194,104,.28);
+  }
+  .play:active{transform:translateY(1px)}
+  .play small{display:block;font-size:12px;font-weight:600;opacity:.75;margin-top:2px}
+  nav{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px 0 6px;
+  }
+  nav a{
+    color:var(--gold);text-decoration:none;font-size:13px;
+    border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--bg2);
+  }
+  section{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 20px;margin:20px 0;
+  }
+  h2{font-size:21px;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  h2 .no{
+    flex:none;width:30px;height:30px;border-radius:50%;
+    background:var(--gold);color:#241a05;font-size:16px;font-weight:800;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  h3{font-size:17px;color:var(--gold);margin:18px 0 8px}
+  h3:first-of-type{margin-top:6px}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0 8px 22px}
+  li{margin:5px 0}
+  strong{color:#fff}
+  .hl{color:var(--gold);font-weight:700}
+  .bad{color:var(--red);font-weight:700}
+  .good{color:var(--green);font-weight:700}
+  .tip{
+    background:#232038;border-left:4px solid var(--gold);
+    border-radius:8px;padding:12px 14px;margin:14px 0;font-size:15px;
+  }
+  .warn{
+    background:#33222a;border-left:4px solid var(--red);
+    border-radius:8px;padding:12px 14px;margin:14px 0;font-size:15px;
+  }
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--bg2);color:var(--gold);white-space:nowrap}
+  td b{color:#fff}
+  .step{
+    border:1px dashed var(--gold-dim);border-radius:10px;padding:14px 16px;margin:14px 0;
+    background:rgba(232,194,104,.05);
+  }
+  .step .t{font-weight:800;color:var(--gold);font-size:16.5px;margin-bottom:4px}
+  .tag{
+    display:inline-block;font-size:12px;border:1px solid var(--gold-dim);color:var(--gold);
+    border-radius:6px;padding:1px 7px;margin-right:6px;vertical-align:1px;
+  }
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:34px}
+  footer a{color:var(--gold);text-decoration:none}
+  @media (max-width:520px){
+    header h1{font-size:26px}
+    section{padding:18px 14px}
+    table{font-size:13.5px}
+    th,td{padding:6px 7px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">三 国 H D - 2 D</div>
+  <h1>新手攻略：从被虐到爽局</h1>
+  <p>写给「连初级都打不过」的你 —— 不是你菜，是开局设置没选对。</p>
+</header>
+
+<a class="play" href="hd2d-mvp/">▶ 开始游戏<small>点这里直接进入《三国 HD-2D》</small></a>
+
+<nav>
+  <a href="#setup">改设置</a>
+  <a href="#ruler">选君主</a>
+  <a href="#monthly">每月干什么</a>
+  <a href="#route">刘璋爽局路线</a>
+  <a href="#war">打仗速成</a>
+  <a href="#save">存档须知</a>
+  <a href="#pitfall">翻车点</a>
+</nav>
+
+<section id="setup">
+  <h2><span class="no">1</span>先改设置：难度直接降两档</h2>
+  <p>开局画面上有三个选项，选错任何一个，新手都会被电脑按在地上摩擦。照下面选：</p>
+  <ul>
+    <li><strong>难度选 LEVEL 1。</strong>一共 LEVEL 1 / 2 / 3 三档，先从最低的打起，熟悉了再往上加。</li>
+    <li><strong>电脑 AI 选「原版」，千万别选「好战」。</strong>「好战」是重制版新加的模式，电脑每个月都会征兵补兵、内政做得又快又勤，凶得多。同是 LEVEL 1，选了好战照样打不过——很多人就栽在这。</li>
+    <li><strong>把「秘技」开关打开。</strong>这是原版留下的彩蛋，只在 LEVEL 1 可用：打开后，<span class="hl">你君主所在的城，金、米、人口、土地、后备兵全部 9999，产业 999，防灾、统治、宝全部 99</span>。等于大本营直接拉满，第一次玩就开着，先爽一把把系统摸熟，不丢人。</li>
+  </ul>
+  <div class="tip">💡 注意：秘技只加满<strong>君主所在的那一座城</strong>。其他城池该穷还是穷，靠后面讲的「输送」从大本营调钱粮、用后备兵补给。</div>
+</section>
+
+<section id="ruler">
+  <h2><span class="no">2</span>君主怎么选：刘璋是官方简单模式</h2>
+  <p>189 年开局一共 7 位君主，难度差距大得离谱：</p>
+  <table>
+    <tr><th>君主</th><th>开局城池</th><th>点评</th></tr>
+    <tr><td><b>刘璋</b></td><td>汉中、成都、涪陵、云南（4 城 11 将）</td><td><span class="good">最容易</span>。城最多、将最多，缩在西南角，没人来打你</td></tr>
+    <tr><td><b>孙策</b></td><td>建业、扬州、建安、江夏（4 城）</td><td>地盘也不小，东边相对安稳</td></tr>
+    <tr><td><b>袁绍</b></td><td>幽州、青州、冀州（3 城）</td><td>北方大户，开局资源不错</td></tr>
+    <tr><td><b>马腾</b></td><td>凉州、安定、西平关（3 城）</td><td>西北角落，偏安一隅</td></tr>
+    <tr><td><b>董卓</b></td><td>长安、洛阳（2 城）</td><td>将猛城大，但四面受敌</td></tr>
+    <tr><td><b>曹操</b></td><td>兖州、豫州（2 城）</td><td>中原四战之地，新手慎选</td></tr>
+    <tr><td><b>刘备</b></td><td>并州（仅 1 城 3 将）</td><td><span class="bad">最难</span>。这是给老手自虐的，新手别碰</td></tr>
+  </table>
+  <p>另外地图上还有 <strong>11 座无主空城</strong>：辽东、西安阳、徐州、新野、荆州、衡阳、长沙、零陵、交州、郁林、永昌。没人守、不用打，派个武将走过去就是你的——这是前期扩张的正确姿势。</p>
+  <div class="tip">💡 本攻略的主线就是 <strong>刘璋 + LEVEL 1 + 原版 AI + 秘技</strong>，照着走，闭着眼都能统一一半地图。</div>
+</section>
+
+<section id="monthly">
+  <h2><span class="no">3</span>每月在干什么：指令分工表</h2>
+  <p>这游戏的节奏是<strong>按月回合</strong>：每个月你能下达的命令数量有限（命令书随你城池变多而增长），所以每个武将每月干什么，要分工明确，别乱点。</p>
+  <table>
+    <tr><th>活儿</th><th>派谁去</th><th>作用</th></tr>
+    <tr><td><b>开垦</b></td><td>政治高的</td><td>涨土地 → 每月米收入变多</td></tr>
+    <tr><td><b>商业</b></td><td>政治高的</td><td>涨产业 → 每月金收入变多</td></tr>
+    <tr><td><b>搜查</b></td><td>智力高的</td><td>在城里翻出隐藏武将、宝物和钱粮（本作捡人的主要方式！）</td></tr>
+    <tr><td><b>登用</b></td><td>君主本人 / 魅力高的</td><td>把搜出来的人、在野的人招到麾下</td></tr>
+    <tr><td><b>征兵</b></td><td>谁都行</td><td>把后备兵编成正式兵。别贪多，见下方警告</td></tr>
+    <tr><td><b>训练</b></td><td>武力高的</td><td>涨士气，打仗时兵更扛揍</td></tr>
+    <tr><td><b>输送</b></td><td>谁都行</td><td>城与城之间调运金、米、兵，大本营养前线的关键</td></tr>
+  </table>
+  <div class="warn">⚠️ <strong>兵是要吃米的。</strong>征兵一时爽，米不够吃的时候士兵哗变、逃亡，比打败仗还惨。原则：<strong>先看米再征兵</strong>，兵力够守城 + 打一座弱城就行。</div>
+  <p>记住一句话：<span class="hl">武将数量就是这游戏的命根子。</span>前期最重要的事不是打仗，是搜查捡人、登用招人。人多，每月能干的活就多，滚雪球就开始了。</p>
+</section>
+
+<section id="route">
+  <h2><span class="no">4</span>刘璋爽局发展路线（四步走）</h2>
+  <p>刘璋手下本来就不弱：汉中有<strong>严颜</strong>（武 86）、<strong>张任</strong>（武 84）守北门，成都有<strong>雷铜</strong>（武 82）、<strong>黄权</strong>（智 78），云南有<strong>法正</strong>（智 92）、<strong>孟达</strong>，涪陵有<strong>张松</strong>（智 90）。再按下面四步走，这局就稳了。</p>
+
+  <div class="step">
+    <div class="t">第一步：成都大本营，搜查补员</div>
+    <p>秘技已经把成都（刘璋所在城）拉满了，钱粮不愁。开局头几个月别打仗，全员干内政 + 搜查：</p>
+    <ul>
+      <li><strong>成都搜查</strong> → 能翻出 <strong>李严</strong>（武 82 / 智 75，能打能算）、董允、杨仪，搜到就登用。</li>
+      <li><strong>涪陵搜查</strong> → <strong>蒋琬</strong>（智 90）、<strong>费祎</strong>（智 85）、向宠、张翼，全是顶级文官，内政和以后打仗都靠他们。</li>
+      <li><strong>云南搜查</strong> → <strong>鄂焕</strong>（武 85），南边的前锋就有了。</li>
+      <li>政治高的继续开垦、商业，把成都周边几座城的收入也拉起来；多余的钱粮用「输送」往前线城送。</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="t">第二步：先吃永昌，南边落袋为安</div>
+    <p>永昌是无主空城，就在云南南边，<strong>不用打，派个武将带点兵走过去就占了</strong>。占下之后在永昌搜查 → <strong>孟获</strong>（武 87）、<strong>兀突骨</strong>（武 80）两位南蛮猛将直接入伙。至此你有 5 座城，整个西南后方彻底安稳，谁也威胁不到你。</p>
+  </div>
+
+  <div class="step">
+    <div class="t">第三步：东进荆州，抢诸葛亮</div>
+    <p>攒够兵之后，从涪陵 / 成都向东，目标 <strong>荆州</strong>（无主空城，先到先得，要抢在别人前面）。荆州的搜查名单是全游戏最豪华的：<strong>诸葛亮</strong>（智 99）、<strong>徐庶</strong>（智 96）、<strong>马良</strong>（智 94）、<strong>周仓</strong>（武 84）。把诸葛亮招到手，你的军师位就毕业了。顺路把新野、长沙、衡阳、零陵这些南部空城一并收了，半壁江山到手。</p>
+  </div>
+
+  <div class="step">
+    <div class="t">第四步：汉中北伐，直取长安</div>
+    <p>后方稳固、人也齐了，从汉中出兵北上打长安（董卓的地盘）。严颜、张任就是为这一步准备的。打之前记得：兵力至少是守军的 1.5 倍、从成都输送足够的米过去、<strong>出征前先存档</strong>。拿下长安，洛阳就在眼前，统一只是时间问题。</p>
+  </div>
+</section>
+
+<section id="war">
+  <h2><span class="no">5</span>打仗速成：只记五条</h2>
+  <ol>
+    <li><strong>只打弱的。</strong>空城、叛乱城、兵比你少的城优先；对方兵力 ×1.5 以下的仗，新手不要接。</li>
+    <li><strong>出征前先存档。</strong>打输了读档重来，天经地义。这游戏的存档位就是给你这么用的。</li>
+    <li><strong>野战先围后打。</strong>在战场地图上把部队展开、占住地形再接敌，别让单个武将冲进人堆。</li>
+    <li><strong>白兵战挑软柿子。</strong>让我方武力高的，先打对方武力低的，以强吃弱、攒经验升级；别一上来就硬碰对方主将。</li>
+    <li><strong>猛将就单挑。</strong>武力 85+ 的将（严颜、孟获、张任这一档）单挑赢面很大，一场挑翻对方一员将，对面士气直接崩。反过来，对方有吕布这种怪物时，绕开他，别送。</li>
+  </ol>
+  <div class="tip">💡 实在打不过的仗可以撤：战斗里用「战场中断」先退出来，进度能从标题画面恢复（只能恢复一次，见下节）。保住武将比保住一座城重要——城丢了能再打，人没了就真没了。</div>
+</section>
+
+<section id="save">
+  <h2><span class="no">6</span>存档与刷新须知（重要！）</h2>
+  <ul>
+    <li>存档存在<strong>你自己的浏览器里</strong>（localStorage），一共 <strong>8 个存档位</strong>，不用注册、不用联网。</li>
+    <li><span class="bad">刷新页面 = 回到标题画面。</span>没存档的进度，刷新一下就没了。养成习惯：<strong>打大仗前存、出远门前存、每个月顺手存</strong>。</li>
+    <li>战斗中途想停：用「战场中断」退出，之后在标题画面可以接着打——但<span class="hl">只能恢复一次</span>，恢复后那个中断点就没了。</li>
+    <li>存档是<strong>按网址分开存</strong>的：换一个链接打开游戏，看不到之前的存档。认准你现在玩的这个地址，别换来换去。</li>
+    <li><span class="bad">不要用无痕 / 隐私模式玩</span>，窗口一关，存档全清。</li>
+  </ul>
+</section>
+
+<section id="pitfall">
+  <h2><span class="no">7</span>常见翻车点</h2>
+  <table>
+    <tr><th>症状</th><th>多半是为什么</th></tr>
+    <tr><td>初级都打不过，电脑兵越来越多</td><td>AI 选了「好战」。回标题重开，选「原版」</td></tr>
+    <tr><td>开局选了刘备，被围着打</td><td>刘备是全游戏最难开局（1 城 3 将）。换刘璋</td></tr>
+    <tr><td>兵很多，却突然哗变、逃亡</td><td>米不够吃了。征兵前先看米，宁可少征</td></tr>
+    <tr><td>武将总共就几个，忙不过来</td><td>没搜查。智力高的将每月挨个城搜查捡人</td></tr>
+    <tr><td>打一座城打到全军覆没</td><td>兵力没到对方 1.5 倍就硬上。先存档、攒兵、挑弱的打</td></tr>
+    <tr><td>玩了一下午，刷新一下全没了</td><td>没存档。刷新必回标题，存档才是真进度</td></tr>
+    <tr><td>前线城穷得叮当响</td><td>忘了「输送」。从成都这种大后方往前线调金、米、兵</td></tr>
+    <tr><td>招的人忠诚低、转头就跑</td><td>登用要派君主或魅力高的去；刚招的人先赏赐、别马上派去送死</td></tr>
+  </table>
+</section>
+
+<footer>
+  <p>按这篇开一局刘璋，先爽起来，系统摸熟了再去挑战 LEVEL 2 / 3 和曹操、刘备。</p>
+  <p style="margin-top:8px"><a href="hd2d-mvp/">▶ 回到游戏</a></p>
+</footer>
+
+</div>
+</body>
+</html>
