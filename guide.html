@@ -118,6 +118,7 @@
   <a href="#war">打仗速成</a>
   <a href="#save">存档须知</a>
   <a href="#pitfall">翻车点</a>
+  <a href="#planner">我的搜查计划</a>
   <a href="#appendix">全城搜查表</a>
 </nav>
 
@@ -234,6 +235,88 @@
     <tr><td>前线城穷得叮当响</td><td>忘了「输送」。从成都这种大后方往前线调金、米、兵</td></tr>
     <tr><td>招的人忠诚低、转头就跑</td><td>登用要派君主或魅力高的去；刚招的人先赏赐、别马上派去送死</td></tr>
   </table>
+</section>
+
+
+<section id="planner">
+  <h2><span class="no">★</span>我的搜查计划（互动版）</h2>
+  <p>选你玩的君主、填你现在打到哪一年，下面的计划会<strong>实时算</strong>：你手里每座城现在该搜谁、谁还没到年份、还要等几年。打下新城了就在城池清单里把它勾上；某个人已经搜到手，就点他后面的「✓ 已搜到」，队列会自动往前挪。你的选择会存在本页（浏览器本地），刷新不丢。</p>
+  <style>
+    #planner .bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:14px 0}
+    #planner select,#planner input[type=number]{background:#171a2e;color:#e8e0c8;border:1px solid #8a7433;border-radius:6px;padding:8px 10px;font-size:16px}
+    #planner input[type=number]{width:90px}
+    #planner .cities{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+    #planner .cities label{border:1px solid #4a4436;border-radius:14px;padding:4px 10px;cursor:pointer;font-size:14px;user-select:none}
+    #planner .cities label.on{border-color:#f0c75e;color:#f0c75e;background:rgba(240,199,94,.08)}
+    #planner .cities input{display:none}
+    #planner .box{border:1px solid #4a4436;border-radius:10px;padding:12px 14px;margin:12px 0;background:rgba(255,255,255,.02)}
+    #planner .box h3{margin:0 0 8px;font-size:16px;color:#f0c75e}
+    #planner .item{margin:6px 0;line-height:1.7}
+    #planner .star{color:#f0c75e;font-weight:bold}
+    #planner button.found{margin-left:8px;background:none;border:1px solid #8a7433;color:#e8e0c8;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:13px}
+    #planner button.found:hover{border-color:#f0c75e;color:#f0c75e}
+    #planner .dim{color:#9a94a8;font-size:14px}
+    #planner .done{color:#7a7668;text-decoration:line-through}
+    #planner button.reset{background:none;border:1px solid #4a4436;color:#9a94a8;border-radius:6px;padding:6px 12px;cursor:pointer}
+  </style>
+  <div class="bar">
+    <label>君主 <select id="pl-ruler"></select></label>
+    <label>当前年份 <input type="number" id="pl-year" min="189" max="230" step="1"> 年</label>
+    <button type="button" class="reset" id="pl-reset">重置计划</button>
+  </div>
+  <div class="dim">我拥有的城（点一下切换，打下新城记得勾上）：</div>
+  <div class="cities" id="pl-cities"></div>
+  <div id="pl-results"></div>
+  <script>
+  const PL_DATA = {"cities":[{"id":0,"n":"辽东","f":7,"q":[{"id":74,"n":"公孙康","y":190,"w":64,"s":62},{"id":11,"n":"王建","y":208,"w":24,"s":75},{"id":36,"n":"贾范","y":209,"w":33,"s":64},{"id":73,"n":"公孙渊","y":210,"w":76,"s":20}]},{"id":1,"n":"幽州","f":1,"q":[{"id":157,"n":"陈震","y":189,"w":53,"s":78},{"id":144,"n":"赵云","y":190,"w":97,"s":86},{"id":49,"n":"韩猛","y":191,"w":58,"s":21},{"id":65,"n":"严纲","y":192,"w":55,"s":51}]},{"id":2,"n":"并州","f":4,"q":[{"id":50,"n":"简雍","y":190,"w":34,"s":74},{"id":226,"n":"廖化","y":193,"w":72,"s":54}]},{"id":3,"n":"青州","f":1,"q":[{"id":152,"n":"张南","y":189,"w":61,"s":46},{"id":193,"n":"武安国","y":190,"w":80,"s":21},{"id":100,"n":"淳于琼","y":191,"w":69,"s":16},{"id":174,"n":"马延","y":192,"w":58,"s":32},{"id":3,"n":"尹楷","y":193,"w":54,"s":39},{"id":101,"n":"荀谌","y":194,"w":30,"s":72},{"id":53,"n":"义渠","y":196,"w":58,"s":37}]},{"id":4,"n":"冀州","f":1,"q":[{"id":68,"n":"高干","y":189,"w":60,"s":38},{"id":56,"n":"许攸","y":190,"w":34,"s":91},{"id":149,"n":"张郃","y":191,"w":89,"s":43},{"id":118,"n":"辛毗","y":192,"w":35,"s":86},{"id":119,"n":"辛评","y":193,"w":54,"s":60},{"id":232,"n":"吕翔","y":193,"w":50,"s":36},{"id":160,"n":"陈琳","y":194,"w":45,"s":82}]},{"id":5,"n":"西安阳","f":7,"q":[{"id":207,"n":"杨阜","y":189,"w":40,"s":75},{"id":166,"n":"田畴","y":190,"w":51,"s":54},{"id":217,"n":"李孚","y":191,"w":33,"s":69},{"id":82,"n":"崔琰","y":192,"w":42,"s":74}]},{"id":6,"n":"凉州","f":6,"q":[{"id":195,"n":"庞柔","y":191,"w":63,"s":47},{"id":198,"n":"庞德","y":193,"w":94,"s":60},{"id":6,"n":"越吉","y":198,"w":81,"s":21},{"id":34,"n":"雅丹","y":199,"w":75,"s":68}]},{"id":7,"n":"安定","f":6,"q":[{"id":115,"n":"任双","y":189,"w":65,"s":50},{"id":25,"n":"郝昭","y":191,"w":76,"s":74},{"id":46,"n":"韩德","y":193,"w":77,"s":45},{"id":39,"n":"韩瑛","y":194,"w":70,"s":41},{"id":40,"n":"韩琪","y":195,"w":64,"s":22},{"id":84,"n":"崔谅","y":197,"w":58,"s":34},{"id":55,"n":"姜维","y":209,"w":92,"s":94}]},{"id":8,"n":"长安","f":0,"q":[{"id":125,"n":"宋宪","y":189,"w":60,"s":48},{"id":85,"n":"史涣","y":190,"w":65,"s":38},{"id":208,"n":"雷薄","y":191,"w":74,"s":49},{"id":231,"n":"吕虔","y":192,"w":63,"s":57},{"id":59,"n":"纪灵","y":193,"w":70,"s":31},{"id":14,"n":"王忠","y":195,"w":36,"s":38},{"id":169,"n":"邓艾","y":208,"w":87,"s":90},{"id":103,"n":"钟会","y":209,"w":70,"s":92}]},{"id":9,"n":"西平关","f":6,"q":[{"id":175,"n":"马玩","y":192,"w":60,"s":47},{"id":215,"n":"李湛","y":193,"w":63,"s":12},{"id":227,"n":"梁兴","y":194,"w":65,"s":28}]},{"id":10,"n":"徐州","f":7,"q":[{"id":136,"n":"孙乾","y":189,"w":46,"s":74},{"id":188,"n":"糜竺","y":190,"w":40,"s":73},{"id":189,"n":"糜芳","y":191,"w":55,"s":47}]},{"id":11,"n":"兖州","f":2,"q":[{"id":99,"n":"荀彧","y":189,"w":34,"s":96},{"id":161,"n":"程昱","y":190,"w":22,"s":92},{"id":111,"n":"徐晃","y":191,"w":91,"s":50},{"id":24,"n":"郭嘉","y":192,"w":36,"s":97},{"id":1,"n":"韦康","y":193,"w":40,"s":43},{"id":102,"n":"蒋干","y":194,"w":42,"s":74},{"id":28,"n":"郭淮","y":200,"w":64,"s":86}]},{"id":12,"n":"洛阳","f":0,"q":[{"id":71,"n":"侯成","y":189,"w":72,"s":52},{"id":80,"n":"胡车儿","y":190,"w":74,"s":50},{"id":83,"n":"蔡阳","y":191,"w":62,"s":47},{"id":114,"n":"任峻","y":192,"w":35,"s":39},{"id":206,"n":"杨修","y":196,"w":50,"s":93},{"id":13,"n":"王双","y":200,"w":89,"s":13}]},{"id":13,"n":"新野","f":7,"q":[{"id":159,"n":"陈兰","y":189,"w":68,"s":49},{"id":18,"n":"蒯越","y":190,"w":41,"s":84},{"id":19,"n":"蒯良","y":191,"w":38,"s":89},{"id":15,"n":"王平","y":193,"w":71,"s":48},{"id":170,"n":"邓芝","y":196,"w":45,"s":84}]},{"id":14,"n":"豫州","f":2,"q":[{"id":216,"n":"李典","y":189,"w":60,"s":64},{"id":165,"n":"典韦","y":190,"w":96,"s":26},{"id":57,"n":"许褚","y":191,"w":97,"s":35},{"id":54,"n":"牛金","y":192,"w":80,"s":36},{"id":156,"n":"张辽","y":193,"w":90,"s":84},{"id":86,"n":"司马懿","y":194,"w":64,"s":98},{"id":225,"n":"刘晔","y":198,"w":37,"s":91},{"id":140,"n":"孙礼","y":200,"w":87,"s":58}]},{"id":15,"n":"建业","f":3,"q":[{"id":61,"n":"虞翻","y":189,"w":40,"s":79},{"id":212,"n":"陆绩","y":190,"w":32,"s":64},{"id":121,"n":"薛综","y":191,"w":37,"s":64},{"id":94,"n":"朱桓","y":192,"w":84,"s":70},{"id":184,"n":"万彧","y":193,"w":48,"s":83},{"id":171,"n":"董袭","y":194,"w":68,"s":50},{"id":234,"n":"吕蒙","y":198,"w":87,"s":93},{"id":199,"n":"步骘","y":200,"w":39,"s":80}]},{"id":16,"n":"扬州","f":3,"q":[{"id":20,"n":"贾华","y":189,"w":65,"s":58},{"id":95,"n":"朱然","y":190,"w":77,"s":40},{"id":91,"n":"周泰","y":191,"w":82,"s":33},{"id":21,"n":"华歆","y":192,"w":27,"s":85},{"id":235,"n":"鲁肃","y":193,"w":39,"s":95},{"id":107,"n":"诸葛瑾","y":194,"w":48,"s":94},{"id":79,"n":"顾雍","y":196,"w":46,"s":83},{"id":228,"n":"凌统","y":198,"w":86,"s":53},{"id":213,"n":"陆逊","y":200,"w":77,"s":97}]},{"id":17,"n":"建安","f":3,"q":[{"id":64,"n":"严畯","y":189,"w":21,"s":74},{"id":164,"n":"程秉","y":191,"w":36,"s":52},{"id":185,"n":"潘璋","y":192,"w":78,"s":52},{"id":210,"n":"李异","y":193,"w":70,"s":33},{"id":190,"n":"傅婴","y":194,"w":58,"s":51}]},{"id":18,"n":"交州","f":7,"q":[{"id":142,"n":"谭雄","y":190,"w":76,"s":45},{"id":223,"n":"留平","y":192,"w":57,"s":47}]},{"id":19,"n":"郁林","f":7,"q":[{"id":58,"n":"妫览","y":189,"w":52,"s":8},{"id":92,"n":"周鲂","y":191,"w":54,"s":79},{"id":98,"n":"朱灵","y":193,"w":63,"s":42}]},{"id":20,"n":"江夏","f":3,"q":[{"id":233,"n":"吕范","y":189,"w":23,"s":80},{"id":47,"n":"甘宁","y":190,"w":93,"s":60},{"id":135,"n":"苏飞","y":192,"w":60,"s":55},{"id":113,"n":"徐盛","y":193,"w":74,"s":55},{"id":122,"n":"全琮","y":194,"w":63,"s":56},{"id":197,"n":"庞统","y":196,"w":39,"s":98}]},{"id":21,"n":"荆州","f":7,"q":[{"id":2,"n":"伊籍","y":189,"w":33,"s":84},{"id":90,"n":"周仓","y":190,"w":84,"s":61},{"id":112,"n":"徐庶","y":192,"w":74,"s":96},{"id":109,"n":"诸葛亮","y":194,"w":62,"s":99},{"id":183,"n":"马良","y":196,"w":45,"s":94}]},{"id":22,"n":"衡阳","f":7,"q":[{"id":230,"n":"吕旷","y":189,"w":65,"s":40},{"id":192,"n":"文聘","y":190,"w":81,"s":53},{"id":236,"n":"李珪","y":191,"w":36,"s":52},{"id":12,"n":"王粲","y":193,"w":34,"s":82},{"id":177,"n":"马谡","y":196,"w":80,"s":89}]},{"id":23,"n":"长沙","f":7,"q":[{"id":41,"n":"韩玄","y":189,"w":41,"s":21},{"id":52,"n":"魏延","y":192,"w":94,"s":42},{"id":75,"n":"黄忠","y":193,"w":96,"s":64}]},{"id":24,"n":"零陵","f":7,"q":[{"id":221,"n":"刘度","y":189,"w":51,"s":36},{"id":62,"n":"邢道荣","y":190,"w":80,"s":13}]},{"id":25,"n":"汉中","f":5,"q":[{"id":10,"n":"阎圃","y":189,"w":32,"s":78},{"id":145,"n":"张卫","y":190,"w":61,"s":49},{"id":116,"n":"申耽","y":191,"w":72,"s":40},{"id":4,"n":"尹赏","y":193,"w":62,"s":38},{"id":178,"n":"马遵","y":194,"w":51,"s":22}]},{"id":26,"n":"成都","f":5,"q":[{"id":168,"n":"董允","y":189,"w":38,"s":86},{"id":17,"n":"王累","y":190,"w":42,"s":77},{"id":205,"n":"杨洪","y":191,"w":37,"s":69},{"id":214,"n":"李严","y":193,"w":82,"s":75},{"id":204,"n":"杨仪","y":196,"w":47,"s":79}]},{"id":27,"n":"涪陵","f":5,"q":[{"id":105,"n":"向宠","y":190,"w":70,"s":55},{"id":155,"n":"张翼","y":193,"w":67,"s":65},{"id":187,"n":"费祎","y":194,"w":18,"s":85},{"id":69,"n":"高翔","y":196,"w":62,"s":55},{"id":104,"n":"蒋琬","y":198,"w":44,"s":90}]},{"id":28,"n":"云南","f":5,"q":[{"id":229,"n":"吕凯","y":189,"w":37,"s":87},{"id":76,"n":"高定","y":190,"w":51,"s":56},{"id":203,"n":"雍闿","y":191,"w":68,"s":37},{"id":35,"n":"鄂焕","y":192,"w":85,"s":20},{"id":147,"n":"张嶷","y":193,"w":77,"s":56},{"id":60,"n":"金环结","y":194,"w":62,"s":38},{"id":97,"n":"朱褒","y":196,"w":57,"s":67},{"id":0,"n":"阿会喃","y":198,"w":64,"s":24}]},{"id":29,"n":"永昌","f":7,"q":[{"id":172,"n":"董荼奴","y":190,"w":63,"s":49},{"id":200,"n":"孟获","y":194,"w":87,"s":29},{"id":202,"n":"孟优","y":196,"w":69,"s":40},{"id":78,"n":"兀突骨","y":198,"w":80,"s":26}]}],"factions":[{"n":"董卓","cities":[8,12]},{"n":"袁绍","cities":[1,3,4]},{"n":"曹操","cities":[11,14]},{"n":"孙策","cities":[15,16,17,20]},{"n":"刘备","cities":[2]},{"n":"刘璋","cities":[25,26,27,28]},{"n":"马腾","cities":[6,7,9]}]};
+  const PL_STARS = new Set(['赵云','诸葛亮','司马懿','郭嘉','荀彧','张郃','庞德','姜维','邓艾','钟会','魏延','黄忠','甘宁','庞统','陆逊','吕蒙','张辽','典韦','许褚','徐晃','鲁肃','李严','孟获','徐庶']);
+  const PL_KEY = 'tk-guide-plan-v1';
+  let pl = {ruler:5, year:189, owned:[], found:[]};
+  try { const saved = JSON.parse(localStorage.getItem(PL_KEY)); if (saved && saved.owned) pl = saved; } catch(e) {}
+  if (!pl.owned.length) pl.owned = PL_DATA.factions[pl.ruler].cities.slice();
+  const plSave = () => { try { localStorage.setItem(PL_KEY, JSON.stringify(pl)); } catch(e) {} };
+  const $ruler = document.getElementById('pl-ruler'), $year = document.getElementById('pl-year'),
+        $cities = document.getElementById('pl-cities'), $res = document.getElementById('pl-results');
+  PL_DATA.factions.forEach((f,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=f.n; $ruler.appendChild(o); });
+  $ruler.value = pl.ruler; $year.value = pl.year;
+  PL_DATA.cities.forEach(c=>{
+    const lab=document.createElement('label'); lab.dataset.id=c.id;
+    lab.innerHTML = '<input type="checkbox">' + c.n;
+    lab.addEventListener('click', ev=>{ ev.preventDefault();
+      const id=c.id, i=pl.owned.indexOf(id);
+      if (i>=0) pl.owned.splice(i,1); else pl.owned.push(id);
+      plSave(); plRender(); });
+    $cities.appendChild(lab);
+  });
+  $ruler.addEventListener('change', ()=>{ pl.ruler=+($ruler.value); pl.owned = PL_DATA.factions[pl.ruler].cities.slice(); plSave(); plRender(); });
+  $year.addEventListener('change', ()=>{ pl.year = Math.max(189, Math.min(230, +($year.value)||189)); $year.value=pl.year; plSave(); plRender(); });
+  document.getElementById('pl-reset').addEventListener('click', ()=>{ pl={ruler:5,year:189,owned:PL_DATA.factions[5].cities.slice(),found:[]}; $ruler.value=5; $year.value=189; plSave(); plRender(); });
+  function plHead(c){ return c.q.find(o=>!pl.found.includes(o.id)) || null; }
+  function plName(o){ return PL_STARS.has(o.n) ? '<span class="star">'+o.n+'</span>' : o.n; }
+  function plRender(){
+    document.querySelectorAll('#pl-cities label').forEach(lab=>{ lab.classList.toggle('on', pl.owned.includes(+lab.dataset.id)); });
+    const ownedCities = PL_DATA.cities.filter(c=>pl.owned.includes(c.id));
+    const now=[], soon=[], detail=[];
+    ownedCities.forEach(c=>{
+      const head = plHead(c);
+      if (head){ (head.y<=pl.year ? now : soon).push({c,head}); }
+      const chain = c.q.map(o=>{
+        if (pl.found.includes(o.id)) return '<span class="done">'+o.n+'✓</span>';
+        if (head && o.id===head.id) return '<b>'+plName(o)+'（'+o.y+'年，武'+o.w+'/智'+o.s+'）</b>';
+        return '<span class="dim">'+o.n+'（'+o.y+'年）</span>';
+      }).join(' → ');
+      detail.push('<div class="item"><b>'+c.n+'</b>：'+(chain || '<span class="dim">无隐藏武将</span>')+(head ? '<button type="button" class="found" data-found="'+head.id+'">✓ '+head.n+'已搜到</button>' : ' <span class="dim">（已搜完）</span>')+'</div>');
+    });
+    soon.sort((a,b)=>a.head.y-b.head.y);
+    let html='';
+    html += '<div class="box"><h3>🔥 现在就能搜（'+now.length+'）</h3>' + (now.length ? now.map(x=>'<div class="item">去 <b>'+x.c.n+'</b> 搜查 → '+plName(x.head)+'（武'+x.head.w+'/智'+x.head.s+'），搜到立刻登用</div>').join('') : '<div class="dim">暂时没有——你城里队头的人都还没到年份，看下面还要等谁。</div>') + '</div>';
+    html += '<div class="box"><h3>⏳ 即将登场（按年份）</h3>' + (soon.length ? soon.map(x=>'<div class="item"><b>'+x.head.y+' 年</b>（再等 '+(x.head.y-pl.year)+' 年）：'+x.c.n+' → '+plName(x.head)+'（武'+x.head.w+'/智'+x.head.s+'）</div>').join('') : '<div class="dim">没有排队中的人了。</div>') + '</div>';
+    html += '<div class="box"><h3>📋 我每座城的队列</h3>' + (detail.length ? detail.join('') : '<div class="dim">先在上面勾选你拥有的城。</div>') + '</div>';
+    $res.innerHTML = html;
+    $res.querySelectorAll('button[data-found]').forEach(b=>b.addEventListener('click', ()=>{ pl.found.push(+b.dataset.found); plSave(); plRender(); }));
+  }
+  plRender();
+  </script>
 </section>
 
 <section id="appendix">
